@@ -1,9 +1,4 @@
 import org.junit.Test;
-import org.main;
+import org.askeroid.Main;
 public class MainTest {
-    @Test
-    public void testFunction() {
-        assertEquals(1, 1);
-    }
-
 }
