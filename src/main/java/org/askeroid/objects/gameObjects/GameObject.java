@@ -6,6 +6,7 @@ import org.askeroid.graphics.Renderer;
 
 public abstract class GameObject {
     protected double x, y, width, height, speed;
+
     public GameObject(double x, double y, double width, double height, double speed) {
         this.x = x;
         this.y = y;

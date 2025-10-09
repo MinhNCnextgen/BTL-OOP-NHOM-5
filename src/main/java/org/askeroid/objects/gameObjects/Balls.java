@@ -24,7 +24,7 @@ public class Balls extends GameObject {
     }
 
     // Called every frame
-    public void update(double dt, Paddle paddle) {
+    public void update(double dt, Paddle paddle, Bricks bricks) {
         dt /= 1_000_000_000.0;
         if (stuckToPaddle) {
             // stick to paddle's top center
@@ -62,6 +62,26 @@ public class Balls extends GameObject {
         if (y > canvasHeight + radius * 2) {
             reset(paddle);
         }
+
+        // Check if ball collides
+
+        if (intersects(bricks)) {
+            bricks.hits--;
+            // If ball is moving upward, bounce down; if already moving down, keep going down
+            if (bricks.hits <= 0) {
+
+                bricks.active = false;
+            } else {
+                bricks.color = bricks.getColorForHits(bricks.hits);
+            }
+            if (dy < 0) {
+                dy *= -1;
+            }
+            double hitPos = (x + radius) - (bricks.getX() + bricks.getWidth() / 2);
+            dx = hitPos * 5; // tweak multiplier for control
+            y = bricks.getY() + bricks.getHeight(); // position below the brick
+        }
+
         // Print out all attributes for debugging
         System.out.println("Canvas Size: (" + canvasWidth + ", " + canvasHeight + ")");
         System.out.println("Ball Position: (" + x + ", " + y + "), Velocity: (" + dx + ", " + dy + ")");

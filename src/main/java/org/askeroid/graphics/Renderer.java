@@ -5,6 +5,7 @@ import javafx.stage.Stage;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import org.askeroid.objects.gameObjects.Balls;
+import org.askeroid.objects.gameObjects.Bricks;
 import org.askeroid.objects.gameObjects.Paddle;
 
 public class Renderer {
@@ -43,4 +44,12 @@ public class Renderer {
         gc.setFill(Color.WHITE);
         gc.fillOval(ball.getX(), ball.getY(), ball.getRadius() * 2, ball.getRadius() * 2);
     }
+
+    public void drawBrick(GraphicsContext gc, Bricks brick) {
+        if (!brick.isActive()) return;
+        gc.setFill(brick.getColor());
+        gc.fillRect(brick.getX(), brick.getY(), brick.getWidth(), brick.getHeight());
+    }
 }
+
+
