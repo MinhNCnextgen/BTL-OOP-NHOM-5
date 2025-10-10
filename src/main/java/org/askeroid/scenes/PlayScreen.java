@@ -7,6 +7,7 @@ import org.askeroid.graphics.Renderer;
 import org.askeroid.objects.gameObjects.Balls;
 import org.askeroid.objects.gameObjects.Paddle;
 import org.askeroid.objects.gameObjects.Bricks.Bricks;
+import org.askeroid.score.ScoreManager;
 
 import java.util.ArrayList;
 
@@ -16,6 +17,7 @@ public class PlayScreen extends GameScene {
     private Balls ball;
 //    private Bricks bricks;
     public ArrayList<Bricks> brickMap;
+    private ScoreManager scoreManager = new ScoreManager();
     public PlayScreen(Renderer renderer, SceneManager sceneManager, Stage primaryStage) {
         super(renderer, sceneManager, primaryStage);
         this.paddle = new Paddle(240, 600, 100, 20, 350);
@@ -34,12 +36,13 @@ public class PlayScreen extends GameScene {
         for (int row = 0; row < 5; row++) {
             for (int col = 0; col < 10; col++) {
                 double brickX = 30 + col * (60 + 10); // 10px gap
-                double brickY = 50 + row * (20 + 5);  // 5px gap
+                double brickY = 100 + row * (20 + 5);  // 5px gap
                 int hits = 1; // Vary hits between 1 and 3
                 Bricks brick = new Bricks(brickX, brickY, 60, 20, hits);
                 brickMap.add(brick);
             }
         }
+        this.scoreManager = new ScoreManager();
         bindInputs();
     }
 
@@ -47,7 +50,11 @@ public class PlayScreen extends GameScene {
     public void update(double dt) {
         paddle.update(keyboard, dt, canvas.getWidth());
         ball.update(dt, paddle, brickMap);
-        brickMap.removeIf(brick -> !brick.isActive());
+
+        if ( brickMap.removeIf(brick -> !brick.isActive()) ) {
+            scoreManager.addScore(100); // Add score for each brick destroyed
+            System.out.println(scoreManager.getScore());
+        }
     }
 
     @Override
@@ -56,6 +63,7 @@ public class PlayScreen extends GameScene {
         renderer.drawBackground(gc, "images/background/play_background.jpg");
         renderer.drawPaddle(gc, paddle);
         renderer.drawBall(gc, ball);
+        renderer.drawText(gc, "Score: " + scoreManager.getScore(), 10, 30, "Arial", javafx.scene.paint.Color.WHITE);
         for (Bricks brick : brickMap) {
             renderer.drawBrick(gc, brick);
         }

@@ -50,6 +50,12 @@ public class Renderer {
         gc.setFill(brick.getColor());
         gc.fillRect(brick.getX(), brick.getY(), brick.getWidth(), brick.getHeight());
     }
+
+    public void drawText(GraphicsContext gc, String text, double x, double y, String font, Color color) {
+        gc.setFill(color);
+        gc.setFont(javafx.scene.text.Font.font(font));
+        gc.fillText(text, x, y);
+    }
 }
 
 
