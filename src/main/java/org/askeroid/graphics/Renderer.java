@@ -5,7 +5,7 @@ import javafx.stage.Stage;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import org.askeroid.objects.gameObjects.Balls;
-import org.askeroid.objects.gameObjects.Bricks;
+import org.askeroid.objects.gameObjects.Bricks.Bricks;
 import org.askeroid.objects.gameObjects.Paddle;
 
 public class Renderer {

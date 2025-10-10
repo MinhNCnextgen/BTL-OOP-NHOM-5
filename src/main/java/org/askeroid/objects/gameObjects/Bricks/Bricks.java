@@ -1,7 +1,7 @@
-package org.askeroid.objects.gameObjects;
+package org.askeroid.objects.gameObjects.Bricks;
 
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import org.askeroid.objects.gameObjects.GameObject;
 
 public class Bricks extends GameObject {
     protected Color color;
@@ -25,10 +25,12 @@ public class Bricks extends GameObject {
             default: return Color.RED;
         }
     }
-
-    public void disappear(boolean active) {
-        if (this.active == false) {
-            return;
+    public void hit() {
+        hits--;
+        if (hits <= 0) {
+            active = false;
+        } else {
+            color = getColorForHits(hits);
         }
     }
     public boolean isActive() { return active; }

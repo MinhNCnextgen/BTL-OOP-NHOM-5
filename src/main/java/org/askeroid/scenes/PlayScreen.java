@@ -6,13 +6,16 @@ import javafx.stage.Stage;
 import org.askeroid.graphics.Renderer;
 import org.askeroid.objects.gameObjects.Balls;
 import org.askeroid.objects.gameObjects.Paddle;
-import org.askeroid.objects.gameObjects.Bricks;
+import org.askeroid.objects.gameObjects.Bricks.Bricks;
+
+import java.util.ArrayList;
 
 public class PlayScreen extends GameScene {
     public Scene scene;
     private Paddle paddle;
     private Balls ball;
-    private Bricks bricks;
+//    private Bricks bricks;
+    public ArrayList<Bricks> brickMap;
     public PlayScreen(Renderer renderer, SceneManager sceneManager, Stage primaryStage) {
         super(renderer, sceneManager, primaryStage);
         this.paddle = new Paddle(240, 600, 100, 20, 350);
@@ -27,14 +30,24 @@ public class PlayScreen extends GameScene {
                 root.getHeight()
         );
 
-        this.bricks = new Bricks(30,20, 30,20,2);
+        this.brickMap = new ArrayList<>();
+        for (int row = 0; row < 5; row++) {
+            for (int col = 0; col < 10; col++) {
+                double brickX = 30 + col * (60 + 10); // 10px gap
+                double brickY = 50 + row * (20 + 5);  // 5px gap
+                int hits = 1; // Vary hits between 1 and 3
+                Bricks brick = new Bricks(brickX, brickY, 60, 20, hits);
+                brickMap.add(brick);
+            }
+        }
         bindInputs();
     }
 
     @Override
     public void update(double dt) {
         paddle.update(keyboard, dt, canvas.getWidth());
-        ball.update(dt, paddle, bricks);
+        ball.update(dt, paddle, brickMap);
+        brickMap.removeIf(brick -> !brick.isActive());
     }
 
     @Override
@@ -43,7 +56,9 @@ public class PlayScreen extends GameScene {
         renderer.drawBackground(gc, "images/background/play_background.jpg");
         renderer.drawPaddle(gc, paddle);
         renderer.drawBall(gc, ball);
-        renderer.drawBrick(gc, bricks);
+        for (Bricks brick : brickMap) {
+            renderer.drawBrick(gc, brick);
+        }
     }
 
     @Override
