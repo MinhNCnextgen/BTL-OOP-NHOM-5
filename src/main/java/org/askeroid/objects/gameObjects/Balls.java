@@ -2,6 +2,9 @@ package org.askeroid.objects.gameObjects;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import org.askeroid.objects.gameObjects.Bricks.Bricks;
+
+import java.util.ArrayList;
 
 public class Balls extends GameObject {
     private double dx;
@@ -24,7 +27,7 @@ public class Balls extends GameObject {
     }
 
     // Called every frame
-    public void update(double dt, Paddle paddle, Bricks bricks) {
+    public void update(double dt, Paddle paddle, ArrayList<Bricks> brickList) {
         dt /= 1_000_000_000.0;
         if (stuckToPaddle) {
             // stick to paddle's top center
@@ -65,27 +68,59 @@ public class Balls extends GameObject {
 
         // Check if ball collides
 
-        if (intersects(bricks)) {
-            bricks.hits--;
-            // If ball is moving upward, bounce down; if already moving down, keep going down
-            if (bricks.hits <= 0) {
+        for (Bricks brick : brickList) {
+            if (!brick.isActive()) continue;
+            if (intersects(brick)) {
 
-                bricks.active = false;
-            } else {
-                bricks.color = bricks.getColorForHits(bricks.hits);
+                // Compute overlap on both axes
+                double overlapLeft   = (x + radius * 2) - brick.getX();
+                double overlapRight  = (brick.getX() + brick.getWidth()) - x;
+                double overlapTop    = (y + radius * 2) - brick.getY();
+                double overlapBottom = (brick.getY() + brick.getHeight()) - y;
+
+                // Find the smallest overlap → that’s the collision side
+                double minOverlapX = Math.min(overlapLeft, overlapRight);
+                double minOverlapY = Math.min(overlapTop, overlapBottom);
+
+                if (minOverlapX < minOverlapY) {
+                    // Horizontal collision (left or right)
+                    dx *= -1;
+
+                    if (overlapLeft < overlapRight) {
+                        // Hit brick from left
+                        x = brick.getX() - radius * 2 - 0.1;
+                    } else {
+                        // Hit brick from right
+                        x = brick.getX() + brick.getWidth() + 0.1;
+                    }
+
+                } else {
+                    // Vertical collision (top or bottom)
+                    dy *= -1;
+
+                    if (overlapTop < overlapBottom) {
+                        // Hit from top
+                        y = brick.getY() - radius * 2 - 0.1;
+                    } else {
+                        // Hit from bottom
+                        y = brick.getY() + brick.getHeight() + 0.1;
+                    }
+                }
+
+                // Optional: tweak horizontal bounce slightly
+                double hitPos = (x + radius) - (brick.getX() + brick.getWidth() / 2);
+                dx += hitPos * 0.05;
+
+                brick.hit();
+                break; // only handle one collision per frame
             }
-            if (dy < 0) {
-                dy *= -1;
-            }
-            double hitPos = (x + radius) - (bricks.getX() + bricks.getWidth() / 2);
-            dx = hitPos * 5; // tweak multiplier for control
-            y = bricks.getY() + bricks.getHeight(); // position below the brick
         }
 
-        // Print out all attributes for debugging
-        System.out.println("Canvas Size: (" + canvasWidth + ", " + canvasHeight + ")");
-        System.out.println("Ball Position: (" + x + ", " + y + "), Velocity: (" + dx + ", " + dy + ")");
-        System.out.println("Paddle Position: (" + paddle.getX() + ", " + paddle.getY() + ")");
+
+//        // Print out all attributes for debugging
+//        System.out.println("Canvas Size: (" + canvasWidth + ", " + canvasHeight + ")");
+//        System.out.println("Ball Position: (" + x + ", " + y + "), Velocity: (" + dx + ", " + dy + ")");
+//        System.out.println("Paddle Position: (" + paddle.getX() + ", " + paddle.getY() + ")");
     }
 
     private boolean checkCollision(Paddle paddle) {
