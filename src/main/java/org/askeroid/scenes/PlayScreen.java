@@ -52,9 +52,17 @@ public class PlayScreen extends GameScene {
         ball.update(dt, paddle, brickMap);
 
         if ( brickMap.removeIf(brick -> !brick.isActive()) ) {
-            scoreManager.addScore(100); // Add score for each brick destroyed
-            System.out.println(scoreManager.getScore());
+            double multiplier = scoreManager.getMultiplier();
+            scoreManager.addScore(100, multiplier);
+            multiplier = scoreManager.increaseMultiplier(0.1);
         }
+        if (ball.getY() > canvas.getHeight()) {
+            System.out.println("Ball missed! Resetting position.");
+            ball.reset(paddle);
+            scoreManager.resetMultiplier();
+        }
+        System.out.println(scoreManager.getScore());
+        System.out.println(scoreManager.getMultiplier());
     }
 
     @Override
@@ -64,6 +72,7 @@ public class PlayScreen extends GameScene {
         renderer.drawPaddle(gc, paddle);
         renderer.drawBall(gc, ball);
         renderer.drawText(gc, "Score: " + scoreManager.getScore(), 10, 30, "Arial", javafx.scene.paint.Color.WHITE);
+        renderer.drawText(gc, "Multiplier: " + String.format("%.1f", scoreManager.getMultiplier()) + "x", root.getWidth()-150, 30, "Arial", javafx.scene.paint.Color.WHITE);
         for (Bricks brick : brickMap) {
             renderer.drawBrick(gc, brick);
         }

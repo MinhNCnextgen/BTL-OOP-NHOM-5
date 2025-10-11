@@ -1,28 +1,25 @@
 package org.askeroid.score;
 
 public class ScoreManager {
-    private double score;
+    private int score;
     private double multiplier;
 
     public ScoreManager() {
         this.score = 0;
-        this.multiplier = 1;
+        this.multiplier = 1.0;
     }
 
-    public void increaseScore(double points) {
-        score += points;
+    public void addScore(int points, double multiplier) {
+        score += points * multiplier;
     }
 
-    public void addScore(double basePoints) {
-        score += basePoints * multiplier;
-    }
-
-    public void increaseMultiplier() {
-        multiplier += 0.1; // Increase by 10%
+    public double increaseMultiplier(double amount) {
+        multiplier += amount;
+        return multiplier;
     }
 
     public void resetMultiplier() {
-        multiplier = 1;
+        multiplier = 1.0;
     }
 
     public double getScore() {
@@ -35,6 +32,5 @@ public class ScoreManager {
 
     public void resetScore() {
         score = 0;
-        resetMultiplier();
     }
 }
