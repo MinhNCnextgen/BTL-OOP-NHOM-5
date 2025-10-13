@@ -18,6 +18,8 @@ public class PlayScreen extends GameScene {
 //    private Bricks bricks;
     public ArrayList<Bricks> brickMap;
     private ScoreManager scoreManager = new ScoreManager();
+    private int lives = 1;
+
     public PlayScreen(Renderer renderer, SceneManager sceneManager, Stage primaryStage) {
         super(renderer, sceneManager, primaryStage);
         this.paddle = new Paddle(240, 600, 100, 20, 350);
@@ -46,6 +48,43 @@ public class PlayScreen extends GameScene {
         bindInputs();
     }
 
+    private void initGame() {
+        // reset paddle
+        this.paddle = new Paddle(240, 600, 100, 20, 350);
+
+        // reset ball
+        this.ball = new Balls(
+                paddle.getX() + paddle.getWidth() / 2 - 10,
+                paddle.getY() - 20,
+                10,
+                500,
+                45,
+                root.getWidth(),
+                root.getHeight()
+        );
+
+        // clear and recreate bricks
+        if (this.brickMap == null) {
+            this.brickMap = new ArrayList<>();
+        } else {
+            this.brickMap.clear();
+        }
+
+        for (int row = 0; row < 5; row++) {
+            for (int col = 0; col < 10; col++) {
+                double brickX = 30 + col * (60 + 10);
+                double brickY = 100 + row * (20 + 5);
+                int hits = 1;
+                Bricks brick = new Bricks(brickX, brickY, 60, 20, hits);
+                brickMap.add(brick);
+            }
+        }
+
+        // reset score và lives
+        this.scoreManager = new ScoreManager();
+        this.lives = 1;
+    }
+
     @Override
     public void update(double dt) {
         paddle.update(keyboard, dt, canvas.getWidth());
@@ -63,6 +102,24 @@ public class PlayScreen extends GameScene {
         }
         System.out.println(scoreManager.getScore());
         System.out.println(scoreManager.getMultiplier());
+
+        if (brickMap.isEmpty()) {
+            EndScreen endScreen = (EndScreen) sceneManager.getSceneByName("end");
+            endScreen.setGameResult(true, scoreManager.getScore());
+            sceneManager.setScene("end", primaryStage);
+        }
+
+        if (ball.getY() > canvas.getHeight()) {
+            lives--;
+            if (lives <= 0) {
+                EndScreen endScreen = (EndScreen) sceneManager.getSceneByName("end");
+                endScreen.setGameResult(false, scoreManager.getScore());
+                sceneManager.setScene("end", primaryStage);
+            } else {
+                ball.reset(paddle);
+                scoreManager.resetMultiplier();
+            }
+        }
     }
 
     @Override
@@ -88,6 +145,8 @@ public class PlayScreen extends GameScene {
     }
 
     @Override
-    public void onEnter() {}
+    public void onEnter() {
+        initGame();
+    }
 
 }

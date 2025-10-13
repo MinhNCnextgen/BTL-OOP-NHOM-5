@@ -23,14 +23,21 @@ public class Renderer {
     }
 
     public void drawImage(GraphicsContext gc, String imagePath, double x, double y, double width, double height) {
+        gc.setImageSmoothing(false);
         Image image = new Image(imagePath, width, height, false, false);
         gc.drawImage(image, x, y);
     }
 
-    public void drawBackground(GraphicsContext gc, String imagePath) {
-        Image image = new Image(imagePath, gc.getCanvas().getWidth(), gc.getCanvas().getHeight(), false, false);
-        gc.drawImage(image, 0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
+    public void drawBackground(GraphicsContext gc, String path) {
+        Image image = new Image(path, false);
+        gc.setImageSmoothing(false);
+          double cw = gc.getCanvas().getWidth();
+        double ch = gc.getCanvas().getHeight();
+
+        gc.clearRect(0, 0, cw, ch);
+        gc.drawImage(image, 0, 0, cw, ch);
     }
+
 
     public void drawPaddle(GraphicsContext gc, Paddle paddle) {
         gc.setFill(Color.DODGERBLUE);
