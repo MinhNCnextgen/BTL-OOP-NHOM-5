@@ -22,7 +22,7 @@ public class ScoreManager {
         multiplier = 1.0;
     }
 
-    public double getScore() {
+    public int getScore() {
         return score;
     }
 

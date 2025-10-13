@@ -20,6 +20,10 @@ public class SceneManager {
         return currentScene;
     }
 
+    public GameScene getSceneByName(String sceneName) {
+        return sceneMap.get(sceneName);
+    }
+
     public void setScene(String sceneName, Stage stage) {
         if  (sceneMap.containsKey(sceneName)) {
             currentScene =  sceneMap.get(sceneName);
