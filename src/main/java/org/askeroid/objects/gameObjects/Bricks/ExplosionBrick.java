@@ -55,7 +55,7 @@ public class ExplosionBrick extends Brick {
 
         Mask mask = new Mask(centerX, centerY, explosionRadius);
         maskList.add(mask);
-        for (Brick b : BrickList) {
+        for (Brick b : brickMap) {
             if (b != this && b.isActive() && mask.intersects(b)) {
                 b.hit();
             }

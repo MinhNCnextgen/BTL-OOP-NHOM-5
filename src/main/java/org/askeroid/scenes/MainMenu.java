@@ -7,7 +7,7 @@ import org.askeroid.objects.buttons.GameButton;
 
 import java.util.HashMap;
 
-public class MainMenu extends GameScene {
+public class  MainMenu extends GameScene {
 
     private final HashMap<String, GameButton> buttons;
 
@@ -70,5 +70,6 @@ public class MainMenu extends GameScene {
     }
     @Override
     public void onEnter() {
+        System.out.println("Entered Main Menu");
     }
 }

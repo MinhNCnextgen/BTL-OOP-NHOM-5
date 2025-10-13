@@ -2,11 +2,11 @@ package org.askeroid.objects.gameObjects;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import org.askeroid.objects.gameObjects.Bricks.Bricks;
+import org.askeroid.objects.gameObjects.Bricks.Brick;
 
 import java.util.ArrayList;
 
-public class Balls extends GameObject {
+public class Ball extends GameObject {
     private double dx;
     private double dy;
     private double radius;
@@ -14,7 +14,7 @@ public class Balls extends GameObject {
     private double canvasHeight;
     private boolean stuckToPaddle = true;  // <-- new flag
 
-    public Balls(double x, double y, double radius, double speed, double angle,
+    public Ball(double x, double y, double radius, double speed, double angle,
                 double canvasWidth, double canvasHeight) {
         super(x, y, radius * 2, radius * 2, speed);
         this.radius = radius;
@@ -27,7 +27,7 @@ public class Balls extends GameObject {
     }
 
     // Called every frame
-    public void update(double dt, Paddle paddle, ArrayList<Bricks> brickList) {
+    public void update(double dt, Paddle paddle, ArrayList<Brick> brickList) {
         dt /= 1_000_000_000.0;
         if (stuckToPaddle) {
             // stick to paddle's top center
@@ -41,7 +41,7 @@ public class Balls extends GameObject {
         y += dy * dt;
 
         // Wall collisions
-        if (x <= 0 || x + radius * 4 >= canvasWidth) {
+        if (x <= 0 || x + radius * 2 >= canvasWidth) {
             dx *= -1;
             x = Math.max(0, Math.min(x, canvasWidth - radius * 2));
         }
@@ -62,13 +62,13 @@ public class Balls extends GameObject {
         }
 
         // Fell below bottom
-        if (y > canvasHeight + radius * 2) {
-            reset(paddle);
-        }
+//        if (y > canvasHeight + radius * 2) {
+//            reset(paddle);
+//        }
 
         // Check if ball collides
 
-        for (Bricks brick : brickList) {
+        for (Brick brick : brickList) {
             if (!brick.isActive()) continue;
             if (intersects(brick)) {
 

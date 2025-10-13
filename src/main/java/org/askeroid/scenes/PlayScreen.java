@@ -1,59 +1,52 @@
 package org.askeroid.scenes;
 
-import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import org.askeroid.graphics.Renderer;
-import org.askeroid.objects.gameObjects.Balls;
+import org.askeroid.objects.gameObjects.Ball;
+import org.askeroid.objects.gameObjects.Bricks.Brick;
+import org.askeroid.objects.gameObjects.Bricks.DefaultBrick;
+import org.askeroid.objects.gameObjects.Bricks.ExplosionBrick;
+import org.askeroid.objects.gameObjects.Bricks.HardBrick;
 import org.askeroid.objects.gameObjects.Paddle;
-import org.askeroid.objects.gameObjects.Bricks.Bricks;
 import org.askeroid.score.ScoreManager;
+import org.askeroid.utils.LevelLoader;
 
 import java.util.ArrayList;
 
 public class PlayScreen extends GameScene {
-    public Scene scene;
     private Paddle paddle;
-    private Balls ball;
-//    private Bricks bricks;
-    public ArrayList<Bricks> brickMap;
-    private ScoreManager scoreManager = new ScoreManager();
-    private int lives = 1;
+    private Ball ball;
+    private ScoreManager scoreManager;
+    private ArrayList<String> levels;
+    private LevelLoader.LevelData currentLevelData;
+    private int currentLevelIndex;
 
     public PlayScreen(Renderer renderer, SceneManager sceneManager, Stage primaryStage) {
         super(renderer, sceneManager, primaryStage);
-        this.paddle = new Paddle(240, 600, 100, 20, 350);
 
-        this.ball = new Balls(
-                paddle.getX() + paddle.getWidth() / 2 - 10, // align middle
-                paddle.getY() - 20, // on top of paddle
-                10,  // radius
-                500, // speed
-                45,  // initial angle
-                root.getWidth(),
-                root.getHeight()
-        );
-
-        this.brickMap = new ArrayList<>();
-        for (int row = 0; row < 5; row++) {
-            for (int col = 0; col < 10; col++) {
-                double brickX = 30 + col * (60 + 10); // 10px gap
-                double brickY = 100 + row * (20 + 5);  // 5px gap
-                int hits = 1; // Vary hits between 1 and 3
-                Bricks brick = new Bricks(brickX, brickY, 60, 20, hits);
-                brickMap.add(brick);
-            }
+        // Load available levels (once)
+        LevelLoader.LevelList list = LevelLoader.loadLevelList();
+        if (list == null || list.levels == null || list.levels.isEmpty()) {
+            System.err.println("Error: Could not load any levels!");
+            levels = new ArrayList<>();
+        } else {
+            levels = list.levels;
         }
-        this.scoreManager = new ScoreManager();
+
         bindInputs();
+        initGame(); // initial game setup
     }
 
+    /**
+     * Initializes or resets the entire game state.
+     */
     private void initGame() {
-        // reset paddle
+        Brick.brickMap = new ArrayList<>();
+        this.scoreManager = new ScoreManager(3);
+        this.currentLevelIndex = 0;
         this.paddle = new Paddle(240, 600, 100, 20, 350);
-
-        // reset ball
-        this.ball = new Balls(
+        this.ball = new Ball(
                 paddle.getX() + paddle.getWidth() / 2 - 10,
                 paddle.getY() - 20,
                 10,
@@ -63,75 +56,113 @@ public class PlayScreen extends GameScene {
                 root.getHeight()
         );
 
-        // clear and recreate bricks
-        if (this.brickMap == null) {
-            this.brickMap = new ArrayList<>();
+        if (!levels.isEmpty()) {
+            loadNextLevel();
         } else {
-            this.brickMap.clear();
+            System.err.println("No levels available to load.");
         }
+    }
 
-        for (int row = 0; row < 5; row++) {
-            for (int col = 0; col < 10; col++) {
-                double brickX = 30 + col * (60 + 10);
-                double brickY = 100 + row * (20 + 5);
-                int hits = 1;
-                Bricks brick = new Bricks(brickX, brickY, 60, 20, hits);
-                brickMap.add(brick);
-            }
-        }
-
-        // reset score và lives
-        this.scoreManager = new ScoreManager();
-        this.lives = 1;
+    /**
+     * Replays the current scene by resetting all state.
+     * Called from EndScreen when clicking "Replay".
+     */
+    public void replayScene() {
+        System.out.println("Replaying PlayScreen...");
+        initGame();
     }
 
     @Override
     public void update(double dt) {
         paddle.update(keyboard, dt, canvas.getWidth());
-        ball.update(dt, paddle, brickMap);
+        ball.update(dt, paddle, Brick.brickMap);
 
-        if ( brickMap.removeIf(brick -> !brick.isActive()) ) {
+        // Handle destroyed bricks
+        if (Brick.brickMap.removeIf(brick -> !brick.isActive())) {
             double multiplier = scoreManager.getMultiplier();
             scoreManager.addScore(100, multiplier);
-            multiplier = scoreManager.increaseMultiplier(0.1);
-        }
-        if (ball.getY() > canvas.getHeight()) {
-            System.out.println("Ball missed! Resetting position.");
-            ball.reset(paddle);
-            scoreManager.resetMultiplier();
-        }
-        System.out.println(scoreManager.getScore());
-        System.out.println(scoreManager.getMultiplier());
-
-        if (brickMap.isEmpty()) {
-            EndScreen endScreen = (EndScreen) sceneManager.getSceneByName("end");
-            endScreen.setGameResult(true, scoreManager.getScore());
-            sceneManager.setScene("end", primaryStage);
+            scoreManager.increaseMultiplier(0.1);
         }
 
+        // Ball fell off the screen
         if (ball.getY() > canvas.getHeight()) {
-            lives--;
-            if (lives <= 0) {
-                EndScreen endScreen = (EndScreen) sceneManager.getSceneByName("end");
-                endScreen.setGameResult(false, scoreManager.getScore());
+            scoreManager.decreaseHealth(1);
+            if (scoreManager.getHealth() <= 0) {
                 sceneManager.setScene("end", primaryStage);
+                ((EndScreen) sceneManager.getCurrentScene()).setGameResult(false, scoreManager.getScore());
             } else {
-                ball.reset(paddle);
                 scoreManager.resetMultiplier();
+                ball.reset(paddle);
+            }
+        }
+
+        // Win condition
+        if (Brick.brickMap.isEmpty()) {
+            currentLevelIndex++;
+            if (currentLevelIndex >= levels.size()) {
+                sceneManager.setScene("end", primaryStage);
+                ((EndScreen) sceneManager.getCurrentScene()).setGameResult(true, scoreManager.getScore());
+            } else {
+                loadNextLevel();
+                ball.reset(paddle);
             }
         }
     }
 
     @Override
     public void renderScreen(Renderer renderer) {
-        this.gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         renderer.drawBackground(gc, "images/background/play_background.jpg");
         renderer.drawPaddle(gc, paddle);
         renderer.drawBall(gc, ball);
+
+        // HUD
         renderer.drawText(gc, "Score: " + scoreManager.getScore(), 10, 30, "Arial", javafx.scene.paint.Color.WHITE);
-        renderer.drawText(gc, "Multiplier: " + String.format("%.1f", scoreManager.getMultiplier()) + "x", root.getWidth()-150, 30, "Arial", javafx.scene.paint.Color.WHITE);
-        for (Bricks brick : brickMap) {
+        renderer.drawText(gc, "Multiplier: " + String.format("%.1f", scoreManager.getMultiplier()) + "x",
+                root.getWidth() - 150, 30, "Arial", javafx.scene.paint.Color.WHITE);
+        renderer.drawText(gc, "Health: " + scoreManager.getHealth(),
+                root.getWidth() / 2 - 50, 30, "Arial", javafx.scene.paint.Color.WHITE);
+        // Bricks
+        for (Brick brick : Brick.brickMap) {
             renderer.drawBrick(gc, brick);
+        }
+
+        // Explosion masks
+        ExplosionBrick.maskList.removeIf(mask -> (System.nanoTime() - mask.getTimeCreated()) > 1_000_000_000);
+        for (ExplosionBrick.Mask mask : ExplosionBrick.maskList) {
+            renderer.drawMask(gc, mask);
+        }
+    }
+
+    private void loadNextLevel() {
+        String levelName = levels.get(currentLevelIndex);
+        currentLevelData = LevelLoader.loadLevelData("levels_data/" + levelName);
+
+        if (currentLevelData == null) {
+            System.err.println("Failed to load level: " + levelName);
+            return;
+        }
+
+        ArrayList<ArrayList<String>> grid = LevelLoader.parseLayout(currentLevelData.layout, 8, 12);
+        double brickWidth = 50;
+        double brickHeight = 20;
+
+        Brick.brickMap.clear();
+
+        for (int row = 0; row < grid.size(); row++) {
+            for (int col = 0; col < grid.get(row).size(); col++) {
+                String cell = grid.get(row).get(col);
+                double x = col * brickWidth;
+                double y = row * brickHeight + 50; // top margin
+
+                switch (cell) {
+                    case "D" -> Brick.brickMap.add(new DefaultBrick(x, y, brickWidth, brickHeight));
+                    case "H" -> Brick.brickMap.add(new HardBrick(x, y, brickWidth, brickHeight));
+                    case "B" -> Brick.brickMap.add(new ExplosionBrick(x, y, brickWidth, brickHeight));
+                    case "E" -> {} // empty
+                    default -> System.err.println("Unknown brick type: " + cell);
+                }
+            }
         }
     }
 
@@ -139,14 +170,14 @@ public class PlayScreen extends GameScene {
     protected void bindInputs() {
         keyboard.setOnKeyPress(key -> {
             if (key == KeyCode.SPACE) {
-                ball.launch(); // launch ball when space is pressed
+                ball.launch();
             }
         });
     }
 
     @Override
     public void onEnter() {
-        initGame();
+        // Called when re-entering this scene
+        replayScene();
     }
-
 }

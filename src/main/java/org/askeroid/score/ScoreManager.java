@@ -3,10 +3,11 @@ package org.askeroid.score;
 public class ScoreManager {
     private int score;
     private double multiplier;
-
-    public ScoreManager() {
+    private int health;
+    public ScoreManager(int hp) {
         this.score = 0;
         this.multiplier = 1.0;
+        this.health = hp;
     }
 
     public void addScore(int points, double multiplier) {
@@ -28,6 +29,16 @@ public class ScoreManager {
 
     public double getMultiplier() {
         return multiplier;
+    }
+
+    public double getHealth() {
+        return health;
+    }
+
+    public double decreaseHealth(int amount) {
+        health -= amount;
+        if (health < 0) health = 0;
+        return health;
     }
 
     public void resetScore() {
