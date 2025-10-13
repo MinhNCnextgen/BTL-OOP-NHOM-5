@@ -9,11 +9,10 @@ import org.askeroid.objects.buttons.GameButton;
 import java.util.HashMap;
 
 public class EndScreen extends GameScene{
-    public Scene scene;
     private final HashMap<String, GameButton> buttons;
     private String resultMessage;
     private int finalScore;
-    private boolean isWin;
+    private boolean isWin = false;
 
     public EndScreen(Renderer renderer, SceneManager sceneManager, Stage primaryStage) {
         super(renderer, sceneManager, primaryStage);
