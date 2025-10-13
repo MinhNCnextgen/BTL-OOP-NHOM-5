@@ -2,7 +2,7 @@ package org.askeroid.objects.gameObjects;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import org.askeroid.objects.gameObjects.Bricks.Bricks;
+import org.askeroid.objects.gameObjects.Bricks.Brick;
 
 import java.util.ArrayList;
 
@@ -27,7 +27,7 @@ public class Balls extends GameObject {
     }
 
     // Called every frame
-    public void update(double dt, Paddle paddle, ArrayList<Bricks> brickList) {
+    public void update(double dt, Paddle paddle, ArrayList<Brick> brickList) {
         dt /= 1_000_000_000.0;
         if (stuckToPaddle) {
             // stick to paddle's top center
@@ -68,9 +68,9 @@ public class Balls extends GameObject {
 
         // Check if ball collides
 
-        for (Bricks brick : brickList) {
+        for (Brick brick : brickList) {
             if (!brick.isActive()) continue;
-            if (intersects(brick)) {
+            if (checkCollision(brick)) {
 
                 // Compute overlap on both axes
                 double overlapLeft   = (x + radius * 2) - brick.getX();
@@ -109,7 +109,7 @@ public class Balls extends GameObject {
 
                 // Optional: tweak horizontal bounce slightly
                 double hitPos = (x + radius) - (brick.getX() + brick.getWidth() / 2);
-                dx += hitPos * 0.05;
+                dx += hitPos * 1.2;
 
                 brick.hit();
                 break; // only handle one collision per frame
@@ -130,6 +130,12 @@ public class Balls extends GameObject {
                 y < paddle.getY() + paddle.getHeight();
     }
 
+    private boolean checkCollision(Brick brick) {
+        return x + radius * 2 > brick.getX() &&
+                x < brick.getX() + brick.getWidth() &&
+                y + radius * 2 > brick.getY() &&
+                y < brick.getY() + brick.getHeight();
+    }
     // reset after fall
     public void reset(Paddle paddle) {
         System.out.println("Ball lost! Resetting position.");
