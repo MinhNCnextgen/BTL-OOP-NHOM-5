@@ -10,7 +10,7 @@ public class ScoreRanking {
         List<Integer> scores = new ArrayList<>();
 
         // Đọc điểm từ file nếu tồn tại
-        File file = new File(FILE_NAME);
+        File file = new File("./src/main/resources/score_data/"+FILE_NAME);
         if (file.exists()) {
             try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
                 String line;
@@ -54,7 +54,7 @@ public class ScoreRanking {
 
     public static ArrayList<Integer> readScore() {
         ArrayList<Integer> scores = new ArrayList<>();
-        File file = new File(FILE_NAME);
+        File file = new File("./src/main/resources/score_data/"+FILE_NAME);
 
         if (!file.exists()) {
             System.out.println("File điểm không tồn tại!");
