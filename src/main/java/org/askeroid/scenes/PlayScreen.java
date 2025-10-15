@@ -11,6 +11,7 @@ import org.askeroid.objects.gameObjects.Bricks.HardBrick;
 import org.askeroid.objects.gameObjects.Paddle;
 import org.askeroid.score.ScoreManager;
 import org.askeroid.utils.LevelLoader;
+import org.askeroid.utils.ScoreRanking;
 
 import java.util.ArrayList;
 
@@ -41,6 +42,7 @@ public class PlayScreen extends GameScene {
     /**
      * Initializes or resets the entire game state.
      */
+
     private void initGame() {
         Brick.brickMap = new ArrayList<>();
         this.scoreManager = new ScoreManager(3);
@@ -67,6 +69,7 @@ public class PlayScreen extends GameScene {
      * Replays the current scene by resetting all state.
      * Called from EndScreen when clicking "Replay".
      */
+
     public void replayScene() {
         System.out.println("Replaying PlayScreen...");
         initGame();
@@ -90,6 +93,7 @@ public class PlayScreen extends GameScene {
             if (scoreManager.getHealth() <= 0) {
                 sceneManager.setScene("end", primaryStage);
                 ((EndScreen) sceneManager.getCurrentScene()).setGameResult(false, scoreManager.getScore());
+                ScoreRanking.saveScoreToFile(scoreManager.getScore());
             } else {
                 scoreManager.resetMultiplier();
                 ball.reset(paddle);

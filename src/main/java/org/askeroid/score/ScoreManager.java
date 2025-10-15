@@ -1,9 +1,14 @@
 package org.askeroid.score;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
 public class ScoreManager {
-    private int score;
+    public int score;
     private double multiplier;
     private int health;
+
     public ScoreManager(int hp) {
         this.score = 0;
         this.multiplier = 1.0;

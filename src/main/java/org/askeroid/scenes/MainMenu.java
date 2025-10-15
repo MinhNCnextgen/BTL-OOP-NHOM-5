@@ -7,7 +7,7 @@ import org.askeroid.objects.buttons.GameButton;
 
 import java.util.HashMap;
 
-public class  MainMenu extends GameScene {
+public class MainMenu extends GameScene {
 
     private final HashMap<String, GameButton> buttons;
 
@@ -16,6 +16,7 @@ public class  MainMenu extends GameScene {
         buttons = new HashMap<>();
         buttons.put("play", new GameButton(150, 270, 300, 150, "images/buttons/play.png", this));
         buttons.put("exit", new GameButton(150, 480, 300, 150, "images/buttons/quit.png", this));
+        buttons.put("Active@3x", new GameButton(root.getWidth()/2 - 50, root.getHeight() - 136, 100, 100, "images/buttons/Active@3x.png", this));
         bindInputs();
     }
 
