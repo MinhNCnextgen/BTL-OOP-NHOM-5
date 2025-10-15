@@ -36,11 +36,11 @@ public class ScoreManager {
         return multiplier;
     }
 
-    public double getHealth() {
+    public int getHealth() {
         return health;
     }
 
-    public double decreaseHealth(int amount) {
+    public int decreaseHealth(int amount) {
         health -= amount;
         if (health < 0) health = 0;
         return health;
