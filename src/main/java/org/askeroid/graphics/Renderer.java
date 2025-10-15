@@ -64,7 +64,7 @@ public class Renderer {
 
     public void drawText(GraphicsContext gc, String text, double x, double y, String font, double size, Color color) {
         gc.setFill(color);
-        gc.setFont(javafx.scene.text.Font.font("Times New Roman", size));
+        gc.setFont(javafx.scene.text.Font.font(font, size));
         gc.fillText(text, x, y);
     }
 
