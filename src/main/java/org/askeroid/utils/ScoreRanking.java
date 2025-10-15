@@ -1,9 +1,5 @@
 package org.askeroid.utils;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import org.askeroid.score.ScoreManager;
 import java.io.*;
 import java.util.*;
 
@@ -13,19 +9,16 @@ public class ScoreRanking {
     public static void saveScoreToFile(int score) {
         List<Integer> scores = new ArrayList<>();
 
-        // 1. Đọc điểm từ file nếu tồn tại
+        // Đọc điểm từ file nếu tồn tại
         File file = new File(FILE_NAME);
         if (file.exists()) {
             try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
-
-                    if (line.startsWith("Score: ")) {
-                        String numStr = line.substring(7).trim();
-                        try {
-                            int s = Integer.parseInt(numStr);
-                            scores.add(s);
-                        } catch (NumberFormatException ignored) {}
+                    try {
+                        int s = Integer.parseInt(line.trim()); // đọc trực tiếp số nguyên trên mỗi dòng
+                        scores.add(s);
+                    } catch (NumberFormatException ignored) {
                     }
                 }
             } catch (IOException e) {
@@ -41,15 +34,15 @@ public class ScoreRanking {
         // Sắp xếp giảm dần
         scores.sort(Comparator.reverseOrder());
 
-        // Giữ lại 5 điểm cao nhất
-        if (scores.size() > 5) {
-            scores = scores.subList(0, 5);
+        // Giữ lại 8 điểm cao nhất
+        if (scores.size() > 8) {
+            scores = scores.subList(0, 8);
         }
 
         // Ghi lại 5 điểm vào file (ghi đè)
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, false))) {
             for (int s : scores) {
-                writer.write("Score: " + s);
+                writer.write(String.valueOf(s)); // ghi trực tiếp số nguyên
                 writer.newLine();
             }
             System.out.println("Lưu 5 điểm cao nhất thành công!");
@@ -58,6 +51,30 @@ public class ScoreRanking {
             e.printStackTrace();
         }
     }
+
+    public static ArrayList<Integer> readScore() {
+        ArrayList<Integer> scores = new ArrayList<>();
+        File file = new File(FILE_NAME);
+
+        if (!file.exists()) {
+            System.out.println("File điểm không tồn tại!");
+            return scores; // trả về list rỗng
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                try {
+                    int s = Integer.parseInt(line.trim()); // đọc trực tiếp số nguyên trên mỗi dòng
+                    scores.add(s);
+                } catch (NumberFormatException ignored) {
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Đọc file thất bại!");
+            e.printStackTrace();
+        }
+
+        return scores;
+    }
 }
-
-

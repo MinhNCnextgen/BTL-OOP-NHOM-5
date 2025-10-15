@@ -14,6 +14,7 @@ public class SceneManager {
         sceneMap.put("menu", new MainMenu(renderer, this, primaryStage));
         sceneMap.put("play", new PlayScreen(renderer, this, primaryStage));
         sceneMap.put("end", new EndScreen(renderer, this, primaryStage));
+        sceneMap.put("ranking", new Ranking(renderer, this, primaryStage));
         currentScene = sceneMap.get("menu");
     }
 
@@ -31,6 +32,7 @@ public class SceneManager {
                 case "menu" -> replaceScene("menu", new MainMenu(currentScene.getRenderer(), this, stage));
                 case "play" -> replaceScene("play", new PlayScreen(currentScene.getRenderer(), this, stage));
                 case "end" -> replaceScene("end", new EndScreen(currentScene.getRenderer(), this, stage));
+                case "ranking" -> replaceScene("ranking", new Ranking(currentScene.getRenderer(), this, stage));
                 default -> {}
             }
             currentScene =  sceneMap.get(sceneName);

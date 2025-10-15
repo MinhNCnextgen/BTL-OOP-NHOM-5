@@ -62,11 +62,12 @@ public class Renderer {
         gc.strokeRect(brick.getX(), brick.getY(), brick.getWidth(), brick.getHeight());
     }
 
-    public void drawText(GraphicsContext gc, String text, double x, double y, String font, Color color) {
+    public void drawText(GraphicsContext gc, String text, double x, double y, String font, double size, Color color) {
         gc.setFill(color);
-        gc.setFont(javafx.scene.text.Font.font(font));
+        gc.setFont(javafx.scene.text.Font.font("Times New Roman", size));
         gc.fillText(text, x, y);
     }
+
     public void drawMask(GraphicsContext gc, ExplosionBrick.Mask mask) {
         gc.setFill(Color.color(1, 0, 0, 0.3)); // Semi-transparent red
         gc.fillOval(mask.getX(), mask.getY(), mask.getWidth(), mask.getHeight());

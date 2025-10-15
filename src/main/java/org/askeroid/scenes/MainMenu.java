@@ -1,10 +1,9 @@
 package org.askeroid.scenes;
+
 import javafx.scene.Cursor;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.askeroid.graphics.Renderer;
 import org.askeroid.objects.buttons.GameButton;
-
 import java.util.HashMap;
 
 public class MainMenu extends GameScene {
@@ -16,7 +15,7 @@ public class MainMenu extends GameScene {
         buttons = new HashMap<>();
         buttons.put("play", new GameButton(150, 270, 300, 150, "images/buttons/play.png", this));
         buttons.put("exit", new GameButton(150, 480, 300, 150, "images/buttons/quit.png", this));
-        buttons.put("Active@3x", new GameButton(root.getWidth()/2 - 50, root.getHeight() - 136, 100, 100, "images/buttons/Active@3x.png", this));
+        buttons.put("Active@3x", new GameButton(root.getWidth()/2 - 50, root.getHeight() - 136, 100, 100, "asset/png@3x/Star/Large/Active@3x.png", this));
         bindInputs();
     }
 
@@ -42,6 +41,10 @@ public class MainMenu extends GameScene {
         buttons.get("exit").setCallback(button -> {
             System.out.println("Exiting Game...");
             System.exit(0);
+        });
+        buttons.get("Active@3x").setCallback(button -> {
+            System.out.println("Star Button Clicked!");
+            sceneManager.setScene("ranking", primaryStage);
         });
         //Bind Mouse Clicks
         keyboard.setOnMouseClick(e -> {

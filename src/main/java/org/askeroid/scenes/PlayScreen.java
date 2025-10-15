@@ -121,11 +121,11 @@ public class PlayScreen extends GameScene {
         renderer.drawBall(gc, ball);
 
         // HUD
-        renderer.drawText(gc, "Score: " + scoreManager.getScore(), 10, 30, "Arial", javafx.scene.paint.Color.WHITE);
+        renderer.drawText(gc, "Score: " + scoreManager.getScore(), 10, 30, "Times New Roman", 24, javafx.scene.paint.Color.WHITE);
         renderer.drawText(gc, "Multiplier: " + String.format("%.1f", scoreManager.getMultiplier()) + "x",
-                root.getWidth() - 150, 30, "Arial", javafx.scene.paint.Color.WHITE);
+                root.getWidth() - 170, 30, "Times New Roman", 24, javafx.scene.paint.Color.WHITE);
         renderer.drawText(gc, "Health: " + scoreManager.getHealth(),
-                root.getWidth() / 2 - 50, 30, "Arial", javafx.scene.paint.Color.WHITE);
+                root.getWidth() / 2 - 60, 30, "Times New Roman", 24, javafx.scene.paint.Color.WHITE);
         // Bricks
         for (Brick brick : Brick.brickMap) {
             renderer.drawBrick(gc, brick);
