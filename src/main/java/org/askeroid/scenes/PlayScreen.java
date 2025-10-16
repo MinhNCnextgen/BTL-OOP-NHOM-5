@@ -4,11 +4,9 @@ import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import org.askeroid.graphics.Renderer;
 import org.askeroid.objects.gameObjects.Ball;
-import org.askeroid.objects.gameObjects.Bricks.Brick;
-import org.askeroid.objects.gameObjects.Bricks.DefaultBrick;
-import org.askeroid.objects.gameObjects.Bricks.ExplosionBrick;
-import org.askeroid.objects.gameObjects.Bricks.HardBrick;
+import org.askeroid.objects.gameObjects.Bricks.*;
 import org.askeroid.objects.gameObjects.Paddle;
+import org.askeroid.objects.gameObjects.PowerUp.PUObject;
 import org.askeroid.score.ScoreManager;
 import org.askeroid.utils.LevelLoader;
 import org.askeroid.utils.ScoreRanking;
@@ -79,7 +77,10 @@ public class PlayScreen extends GameScene {
     public void update(double dt) {
         paddle.update(keyboard, dt, canvas.getWidth());
         ball.update(dt, paddle, Brick.brickMap);
-
+        PUObject.PUObjectList.removeIf(pu -> !pu.isActive);
+        for (PUObject pu : PUObject.PUObjectList) {
+            pu.update(dt, canvas, this);
+        }
         // Handle destroyed bricks
         if (Brick.brickMap.removeIf(brick -> !brick.isActive())) {
             double multiplier = scoreManager.getMultiplier();
@@ -136,6 +137,11 @@ public class PlayScreen extends GameScene {
         for (ExplosionBrick.Mask mask : ExplosionBrick.maskList) {
             renderer.drawMask(gc, mask);
         }
+
+        // PowerUp
+        for (PUObject pu : PUObject.PUObjectList) {
+            renderer.drawImage(gc, pu.getImagePowerUp(), pu.getX(), pu.getY(), pu.getWidth(), pu.getHeight());
+        }
     }
 
     private void loadNextLevel() {
@@ -163,6 +169,7 @@ public class PlayScreen extends GameScene {
                     case "D" -> Brick.brickMap.add(new DefaultBrick(x, y, brickWidth, brickHeight));
                     case "H" -> Brick.brickMap.add(new HardBrick(x, y, brickWidth, brickHeight));
                     case "B" -> Brick.brickMap.add(new ExplosionBrick(x, y, brickWidth, brickHeight));
+                    case "P" -> Brick.brickMap.add(new PowerUpBrick(x, y, brickWidth, brickHeight));
                     case "E" -> {} // empty
                     default -> System.err.println("Unknown brick type: " + cell);
                 }
@@ -184,4 +191,8 @@ public class PlayScreen extends GameScene {
         // Called when re-entering this scene
         replayScene();
     }
+
+    public Paddle getPaddle() { return paddle; }
+    public Ball getBall() { return ball; }
+    public ScoreManager getScoreManager() {return scoreManager;}
 }

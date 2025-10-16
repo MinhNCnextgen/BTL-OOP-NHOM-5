@@ -27,4 +27,5 @@ public class Paddle extends GameObject {
         if (x < 0) x = 0;
         if (x + width > canvasWidth) x = canvasWidth - width;
     }
+
 }

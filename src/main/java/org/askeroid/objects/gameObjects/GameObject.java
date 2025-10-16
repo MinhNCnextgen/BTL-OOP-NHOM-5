@@ -27,4 +27,9 @@ public abstract class GameObject {
     public double getY() { return y; }
     public double getWidth() { return width; }
     public double getHeight() { return height; }
+    // Setters
+    public double setX(double val) { return x; }
+    public double setY(double val) { return y; }
+    public double setWidth(double val) { return width; }
+    public double setHeight(double val) { return height; }
 }

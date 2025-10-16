@@ -1,56 +1,82 @@
-//package org.askeroid.objects.gameObjects.PowerUp;
-//
-//import javafx.scene.canvas.Canvas;
-//import org.askeroid.objects.gameObjects.GameObject;
-//import org.askeroid.objects.gameObjects.Paddle;
-//import org.askeroid.scenes.PlayScreen;
-//
-//import java.util.ArrayList;
-//
-//public abstract class PUObject extends GameObject {
-//
-//    public static ArrayList<PUObject> PUList = new ArrayList<PUObject>();
-//    public PUObject(double x, double y, double width, double height, double speed) {
-//        super(x, y, width, height, speed);
-//    }
-//
-//    public void update(double dt, Canvas canvas, Paddle paddle, PlayScreen ps) {
-//        dt /= 1_000_000_000.0;
-//        y += speed * dt;
-//        if (intersects(paddle)) {
-//            grantBuff(ps);
-//        }
-//    }
-//
-//    public static void spawnPU(double x, double y, double width, double height, double speed, PUType type) {
-//        PUObject pu = null;
-//        switch (type) {
-//            case WIDEPADDLE:
-//                pu = new WidePaddlePU(x, y, width, height, speed);
-//                break;
-//            case FASTBALL:
-//                pu = new FastBallPU(x, y, width, height, speed);
-//                break;
-//            case MULTIBALL:
-//                pu = new MultiBallPU(x, y, width, height, speed);
-//                break;
-//            case LASER:
-//                pu = new LaserPU(x, y, width, height, speed);
-//                break;
-//            case STICKY:
-//                pu = new StickyPaddlePU(x, y, width, height, speed);
-//                break;
-//            case SLOWBALL:
-//                pu = new SlowBallPU(x, y, width, height, speed);
-//                break;
-//            case EXTRA_LIFE:
-//                pu = new ExtraLifePU(x, y, width, height, speed);
-//                break;
-//        }
-//        if (pu != null) {
-//            PUList.add(pu);
-//        }
-//    }
-//
-//    protected abstract void grantBuff(PlayScreen ps);
-//}
+package org.askeroid.objects.gameObjects.PowerUp;
+
+import javafx.scene.canvas.Canvas;
+import org.askeroid.objects.gameObjects.GameObject;
+import org.askeroid.objects.gameObjects.Paddle;
+import org.askeroid.scenes.PlayScreen;
+
+import java.util.ArrayList;
+import java.util.Random;
+
+public class PUObject extends GameObject {
+
+    public static ArrayList<PUObject> PUObjectList = new ArrayList<PUObject>();
+    private enum PowerUp {
+        WidePaddle,
+        FastBall,
+        ExtraLife
+
+    }
+    private String imagePowerUp;
+    private PowerUp powerUp;
+    public boolean isActive;
+    public PUObject(double x, double y, double width, double height, double speed) {
+        super(x, y, width, height, speed);
+        powerUp = setPowerUp();
+        isActive = true;
+    }
+
+    public void update(double dt, Canvas canvas, PlayScreen ps) {
+        dt /= 1_000_000_000.0;
+        y += speed * dt;
+        if (intersects(ps.getPaddle())) {
+            grantPowerUp(ps);
+            isActive = false;
+        }
+        if (y > canvas.getHeight()) {
+            isActive = false;
+        }
+    }
+
+    private PowerUp setPowerUp() {
+        PowerUp pu = getRandomPowerUp();
+        switch (pu) {
+            case WidePaddle:
+                imagePowerUp = "images/powerup/wide_paddle.png";
+                break;
+            case FastBall:
+                imagePowerUp = "images/powerup/fast_ball.png";
+                break;
+            case ExtraLife:
+                imagePowerUp = "images/powerup/increase_health.png";
+                break;
+        }
+        return pu;
+    }
+
+    private PowerUp getRandomPowerUp() {
+        int pick = new Random().nextInt(PowerUp.values().length);
+        return PowerUp.values()[pick];
+    }
+
+    private void grantPowerUp(PlayScreen ps) {
+        switch (powerUp) {
+            case WidePaddle:
+                System.out.println("Wider Paddle");
+                ps.getPaddle().setWidth(ps.getPaddle().getWidth() * 1.3);
+                break;
+            case FastBall:
+                System.out.println("Faster Ball");
+                ps.getBall().setSpeed(ps.getBall().getSpeed() * 1.5);
+                break;
+            case ExtraLife:
+                System.out.println("Extra Life");
+                ps.getScoreManager().increaseHealth(1);
+                break;
+        }
+    }
+
+    public String getImagePowerUp() {
+        return imagePowerUp;
+    }
+}

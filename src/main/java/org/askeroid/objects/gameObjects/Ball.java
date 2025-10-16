@@ -153,4 +153,17 @@ public class Ball extends GameObject {
     public double getRadius() {
         return radius;
     }
+    public double getSpeed() {
+        return speed;
+    }
+    public void setSpeed(double val) {
+        // Update the base speed
+        this.speed = val;
+        // Preserve direction (normalize current velocity vector)
+        double length = Math.sqrt(dx * dx + dy * dy);
+        if (length != 0) {
+            dx = (dx / length) * speed;
+            dy = (dy / length) * speed;
+        }
+    }
 }
