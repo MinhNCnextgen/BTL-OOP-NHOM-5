@@ -7,6 +7,7 @@ import org.askeroid.objects.gameObjects.Ball;
 import org.askeroid.objects.gameObjects.Bricks.*;
 import org.askeroid.objects.gameObjects.Paddle;
 import org.askeroid.objects.gameObjects.PowerUp.PUObject;
+import org.askeroid.objects.gameObjects.PowerUp.PowerUpManager;
 import org.askeroid.score.ScoreManager;
 import org.askeroid.utils.LevelLoader;
 import org.askeroid.utils.ScoreRanking;
@@ -17,8 +18,8 @@ public class PlayScreen extends GameScene {
     private Paddle paddle;
     private Ball ball;
     private ScoreManager scoreManager;
-    private ArrayList<String> levels;
-    private LevelLoader.LevelData currentLevelData;
+    private PowerUpManager powerUpManager;
+    private final ArrayList<String> levels;
     private int currentLevelIndex;
 
     public PlayScreen(Renderer renderer, SceneManager sceneManager, Stage primaryStage) {
@@ -44,6 +45,7 @@ public class PlayScreen extends GameScene {
     private void initGame() {
         Brick.brickMap = new ArrayList<>();
         this.scoreManager = new ScoreManager(3);
+        this.powerUpManager = new PowerUpManager(this);
         this.currentLevelIndex = 0;
         this.paddle = new Paddle(240, 600, 100, 20, 350);
         this.ball = new Ball(
@@ -81,6 +83,7 @@ public class PlayScreen extends GameScene {
         for (PUObject pu : PUObject.PUObjectList) {
             pu.update(dt, canvas, this);
         }
+        powerUpManager.update();
         // Handle destroyed bricks
         if (Brick.brickMap.removeIf(brick -> !brick.isActive())) {
             double multiplier = scoreManager.getMultiplier();
@@ -146,7 +149,7 @@ public class PlayScreen extends GameScene {
 
     private void loadNextLevel() {
         String levelName = levels.get(currentLevelIndex);
-        currentLevelData = LevelLoader.loadLevelData("levels_data/" + levelName);
+        LevelLoader.LevelData currentLevelData = LevelLoader.loadLevelData("levels_data/" + levelName);
 
         if (currentLevelData == null) {
             System.err.println("Failed to load level: " + levelName);
@@ -195,4 +198,5 @@ public class PlayScreen extends GameScene {
     public Paddle getPaddle() { return paddle; }
     public Ball getBall() { return ball; }
     public ScoreManager getScoreManager() {return scoreManager;}
+    public PowerUpManager getPowerUpManager() {return powerUpManager;}
 }
