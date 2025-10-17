@@ -15,11 +15,11 @@ public class PUObject extends GameObject {
         WidePaddle,
         FastBall,
         ExtraLife
-
     }
     private String imagePowerUp;
     private PowerUp powerUp;
     public boolean isActive;
+    public float duration;
     public PUObject(double x, double y, double width, double height, double speed) {
         super(x, y, width, height, speed);
         powerUp = setPowerUp();
@@ -63,7 +63,11 @@ public class PUObject extends GameObject {
         switch (powerUp) {
             case WidePaddle:
                 System.out.println("Wider Paddle");
-                ps.getPaddle().setWidth(ps.getPaddle().getWidth() * 1.3);
+                double oldWidth = ps.getPaddle().getWidth();
+                double newWidth = Math.min(oldWidth * 1.3, 1000);
+                double centerX = ps.getPaddle().getX() + oldWidth / 2;
+                ps.getPaddle().setWidth(newWidth);
+                ps.getPaddle().setX(centerX - newWidth / 2);
                 break;
             case FastBall:
                 System.out.println("Faster Ball");
