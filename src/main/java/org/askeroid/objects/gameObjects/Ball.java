@@ -33,7 +33,7 @@ public class Ball extends GameObject {
             // stick to paddle's top center
             this.x = paddle.getX() + (paddle.getWidth() / 2) - radius;
             this.y = paddle.getY() - radius * 2 - 1;
-            return; // don’t move while stuck
+            return;
         }
 
         // Move ball
@@ -52,7 +52,7 @@ public class Ball extends GameObject {
         }
 
         // Paddle collision
-        if (checkCollision(paddle)) {
+        if (intersects(paddle)) {
             dy *= -1;
 
             // Slight angle variation depending on hit position
@@ -60,11 +60,6 @@ public class Ball extends GameObject {
             dx = hitPos * 5; // tweak multiplier for control
             y = paddle.getY() - radius * 2;
         }
-
-        // Fell below bottom
-//        if (y > canvasHeight + radius * 2) {
-//            reset(paddle);
-//        }
 
         // Check if ball collides
 
@@ -107,32 +102,17 @@ public class Ball extends GameObject {
                     }
                 }
 
-                // Optional: tweak horizontal bounce slightly
                 double hitPos = (x + radius) - (brick.getX() + brick.getWidth() / 2);
                 dx += hitPos * 0.05;
 
                 brick.hit();
-                break; // only handle one collision per frame
+                break;
             }
         }
-
-
-//        // Print out all attributes for debugging
-//        System.out.println("Canvas Size: (" + canvasWidth + ", " + canvasHeight + ")");
-//        System.out.println("Ball Position: (" + x + ", " + y + "), Velocity: (" + dx + ", " + dy + ")");
-//        System.out.println("Paddle Position: (" + paddle.getX() + ", " + paddle.getY() + ")");
-    }
-
-    private boolean checkCollision(Paddle paddle) {
-        return x + radius * 2 > paddle.getX() &&
-                x < paddle.getX() + paddle.getWidth() &&
-                y + radius * 2 > paddle.getY() &&
-                y < paddle.getY() + paddle.getHeight();
     }
 
     // reset after fall
     public void reset(Paddle paddle) {
-        System.out.println("Ball lost! Resetting position.");
         stuckToPaddle = true;
         this.dx = Math.cos(Math.toRadians(45)) * speed;
         this.dy = Math.sin(Math.toRadians(45)) * speed;
@@ -145,19 +125,9 @@ public class Ball extends GameObject {
         dy = -speed;
     }
 
-    public void draw(GraphicsContext gc) {
-        gc.setFill(Color.WHITE);
-        gc.fillOval(x, y, radius * 2, radius * 2);
-    }
-
-    public double getRadius() {
-        return radius;
-    }
-    public double getSpeed() {
-        return speed;
-    }
+    public double getRadius() {return radius;}
+    public double getSpeed() {return speed;}
     public void setSpeed(double val) {
-        // Update the base speed
         this.speed = val;
         // Preserve direction (normalize current velocity vector)
         double length = Math.sqrt(dx * dx + dy * dy);

@@ -12,7 +12,9 @@ import org.askeroid.score.ScoreManager;
 import org.askeroid.utils.LevelLoader;
 import org.askeroid.utils.ScoreRanking;
 
+import javax.management.ObjectInstance;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class PlayScreen extends GameScene {
     private Paddle paddle;
@@ -57,7 +59,6 @@ public class PlayScreen extends GameScene {
                 root.getWidth(),
                 root.getHeight()
         );
-
         if (!levels.isEmpty()) {
             loadNextLevel();
         } else {
@@ -77,6 +78,12 @@ public class PlayScreen extends GameScene {
 
     @Override
     public void update(double dt) {
+        updateObjects(dt);
+        checkOffBounds();
+        checkWinCondition();
+    }
+
+    private void updateObjects(double dt) {
         paddle.update(keyboard, dt, canvas.getWidth());
         ball.update(dt, paddle, Brick.brickMap);
         PUObject.PUObjectList.removeIf(pu -> !pu.isActive);
@@ -84,14 +91,25 @@ public class PlayScreen extends GameScene {
             pu.update(dt, canvas, this);
         }
         powerUpManager.update();
-        // Handle destroyed bricks
+
+        //Handle destroyed bricks
+        for (Brick brick : Brick.brickMap) {
+            if (!brick.isActive() && !(brick instanceof PowerUpBrick)) {
+                Random random = new Random();
+                random.setSeed(System.nanoTime());
+                if (random.nextDouble() <=  0.1) {
+                    PUObject.PUObjectList.add(new PUObject(brick.getX()+10, brick.getY(), 40, 40, 450, null));
+                }
+            }
+        }
         if (Brick.brickMap.removeIf(brick -> !brick.isActive())) {
             double multiplier = scoreManager.getMultiplier();
             scoreManager.addScore(100, multiplier);
             scoreManager.increaseMultiplier(0.1);
         }
+    }
 
-        // Ball fell off the screen
+    private void checkOffBounds() {
         if (ball.getY() > canvas.getHeight()) {
             scoreManager.decreaseHealth(1);
             if (scoreManager.getHealth() <= 0) {
@@ -103,8 +121,9 @@ public class PlayScreen extends GameScene {
                 ball.reset(paddle);
             }
         }
+    }
 
-        // Win condition
+    private void checkWinCondition() {
         if (Brick.brickMap.isEmpty()) {
             currentLevelIndex++;
             if (currentLevelIndex >= levels.size()) {
@@ -121,26 +140,30 @@ public class PlayScreen extends GameScene {
     public void renderScreen(Renderer renderer) {
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         renderer.drawBackground(gc, "images/background/play_background.jpg");
-        renderer.drawPaddle(gc, paddle);
-        renderer.drawBall(gc, ball);
+        renderHUD(renderer);
+        renderObjects(renderer);
+    }
 
-        // HUD
+    private void renderHUD(Renderer renderer) {
         renderer.drawText(gc, "Score: " + scoreManager.getScore(), 10, 30, "Times New Roman", 24, javafx.scene.paint.Color.WHITE);
         renderer.drawText(gc, "Multiplier: " + String.format("%.1f", scoreManager.getMultiplier()) + "x",
                 root.getWidth() - 170, 30, "Times New Roman", 24, javafx.scene.paint.Color.WHITE);
         renderer.drawText(gc, "Health: " + scoreManager.getHealth(),
                 root.getWidth() / 2 - 60, 30, "Times New Roman", 24, javafx.scene.paint.Color.WHITE);
+    }
+
+    private void renderObjects(Renderer renderer) {
+        renderer.drawPaddle(gc, paddle);
+        renderer.drawBall(gc, ball);
         // Bricks
         for (Brick brick : Brick.brickMap) {
             renderer.drawBrick(gc, brick);
         }
-
         // Explosion masks
         ExplosionBrick.maskList.removeIf(mask -> (System.nanoTime() - mask.getTimeCreated()) > 1_000_000_000);
         for (ExplosionBrick.Mask mask : ExplosionBrick.maskList) {
             renderer.drawMask(gc, mask);
         }
-
         // PowerUp
         for (PUObject pu : PUObject.PUObjectList) {
             renderer.drawImage(gc, pu.getImagePowerUp(), pu.getX(), pu.getY(), pu.getWidth(), pu.getHeight());
