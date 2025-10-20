@@ -1,6 +1,9 @@
 package org.askeroid.objects.gameObjects;
 
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 import org.askeroid.objects.gameObjects.Bricks.Brick;
+
 import java.util.ArrayList;
 
 /**
@@ -15,7 +18,7 @@ public class Ball extends GameObject {
     private double radius;
     private double canvasWidth;
     private double canvasHeight;
-    private boolean stuckToPaddle = true;
+    private boolean stuckToPaddle = true;  // <-- new flag
 
     /**
      * Khởi tạo bóng với vị trí, tốc độ, góc bay và kích thước màn hình.
@@ -88,6 +91,7 @@ public class Ball extends GameObject {
             dx *= -1;
             x = Math.max(0, Math.min(x, canvasWidth - radius * 2));
         }
+
         if (y <= 0) {
             dy *= -1;
             y = 0;

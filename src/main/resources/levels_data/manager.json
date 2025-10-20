@@ -10,7 +10,7 @@
     "D": "default_brick",
     "H": "hard_brick",
     "B": "explosion_brick",
-    "P": "power_up",
+    "P": "power_up_brick",
     "E": "empty"
   },
   "required_rows" : 8,
