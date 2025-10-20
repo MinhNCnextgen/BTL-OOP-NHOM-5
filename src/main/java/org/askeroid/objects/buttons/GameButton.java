@@ -9,7 +9,7 @@ public class GameButton {
     private final double width;
     private final double height;
     private final GameScene gameScene;
-    private final String imagePath;
+    private String imagePath;
     private Consumer<GameButton> callback;
     public GameButton(double x, double y, double width, double height, String imagePath, GameScene gameScene) {
         this.x = x;
@@ -22,6 +22,10 @@ public class GameButton {
 
     public void renderButton() {
         gameScene.getRenderer().drawImage(gameScene.getGraphicsContext(), this.imagePath, x, y, width, height);
+    }
+
+    public void setImage(String imagePath) {
+        this.imagePath = imagePath;
     }
 
     public double getX() {
