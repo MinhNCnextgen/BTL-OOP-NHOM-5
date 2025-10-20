@@ -42,11 +42,13 @@ public class ScoreManager {
 
     public void decreaseHealth(int amount) {
         health -= amount;
-        if (health < 0) health = 0;
+        if (health < 0) {
+            health = 0;
+        }
     }
 
     public void increaseHealth(int amount) {
-        health+=amount;
+        health += amount;
     }
 
     public void resetScore() {
