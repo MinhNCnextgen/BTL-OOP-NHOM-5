@@ -128,6 +128,7 @@ public class PlayScreen extends GameScene {
             currentLevelIndex++;
             if (currentLevelIndex >= levels.size()) {
                 sceneManager.setScene("end", primaryStage);
+                ScoreRanking.saveScoreToFile(scoreManager.getScore());
                 ((EndScreen) sceneManager.getCurrentScene()).setGameResult(true, scoreManager.getScore());
             } else {
                 loadNextLevel();
