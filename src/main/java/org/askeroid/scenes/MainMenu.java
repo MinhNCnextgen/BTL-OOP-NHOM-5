@@ -9,6 +9,8 @@ import java.util.HashMap;
 public class MainMenu extends GameScene {
 
     private final HashMap<String, GameButton> buttons;
+    private boolean isSoundOn = true;
+    private String currentSoundImage = "images/buttons/soundOn.png";
 
     public MainMenu(Renderer renderer, SceneManager sceneManager, Stage primaryStage) {
         super(renderer, sceneManager, primaryStage);
@@ -16,6 +18,7 @@ public class MainMenu extends GameScene {
         buttons.put("play", new GameButton(150, 270, 300, 150, "images/buttons/play.png", this));
         buttons.put("exit", new GameButton(150, 480, 300, 150, "images/buttons/quit.png", this));
         buttons.put("Active@3x", new GameButton(root.getWidth()/2 - 50, root.getHeight() - 136, 100, 100, "asset/png@3x/Star/Large/Active@3x.png", this));
+        buttons.put("sound", new GameButton(10, 690, 100, 100, currentSoundImage, this));
         bindInputs();
     }
 
@@ -45,6 +48,13 @@ public class MainMenu extends GameScene {
         buttons.get("Active@3x").setCallback(button -> {
             System.out.println("Star Button Clicked!");
             sceneManager.setScene("ranking", primaryStage);
+        });
+        buttons.get("sound").setCallback(button -> {
+            isSoundOn = !isSoundOn;
+            currentSoundImage = isSoundOn ? "images/buttons/soundOn.png" : "images/buttons/soundOff.png";
+            button.setImage(currentSoundImage);
+
+            System.out.println("Sound: " + (isSoundOn ? "ON" : "OFF"));
         });
         //Bind Mouse Clicks
         keyboard.setOnMouseClick(e -> {
