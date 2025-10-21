@@ -4,6 +4,7 @@ import javafx.scene.canvas.Canvas;
 import org.askeroid.objects.gameObjects.GameObject;
 import org.askeroid.objects.gameObjects.Paddle;
 import org.askeroid.scenes.PlayScreen;
+import org.askeroid.sound.SoundManager;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -16,8 +17,10 @@ public class PUObject extends GameObject {
     private String imagePowerUp;
     private PowerUpType powerUp;
     public boolean isActive;
+    private SoundManager soundManager;
     public PUObject(double x, double y, double width, double height, double speed, PowerUpType type) {
         super(x, y, width, height, speed);
+        this.soundManager = SoundManager.getInstance();
         if (type == null) {
             this.powerUp = getRandomPowerUp();
         } else {
@@ -31,6 +34,7 @@ public class PUObject extends GameObject {
         dt /= 1_000_000_000.0;
         y += speed * dt;
         if (intersects(ps.getPaddle())) {
+            soundManager.playSound("powerup");
             grantPowerUp(ps);
             isActive = false;
         }

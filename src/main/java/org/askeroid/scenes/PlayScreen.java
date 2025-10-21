@@ -11,6 +11,7 @@ import org.askeroid.objects.gameObjects.PowerUp.PowerUpManager;
 import org.askeroid.score.ScoreManager;
 import org.askeroid.utils.LevelLoader;
 import org.askeroid.utils.ScoreRanking;
+import org.askeroid.sound.SoundManager;
 
 import javax.management.ObjectInstance;
 import java.util.ArrayList;
@@ -23,9 +24,12 @@ public class PlayScreen extends GameScene {
     private PowerUpManager powerUpManager;
     private final ArrayList<String> levels;
     private int currentLevelIndex;
+    private SoundManager soundManager;
+    private boolean ballWasLaunched = false;
 
     public PlayScreen(Renderer renderer, SceneManager sceneManager, Stage primaryStage) {
         super(renderer, sceneManager, primaryStage);
+        soundManager = SoundManager.getInstance();
 
         // Load available levels (once)
         LevelLoader.LevelList list = LevelLoader.loadLevelList();
@@ -84,8 +88,16 @@ public class PlayScreen extends GameScene {
     }
 
     private void updateObjects(double dt) {
+        // luu vi tri y va cham vs paddle
+        double previousY = ball.getY();
+
         paddle.update(keyboard, dt, canvas.getWidth());
         ball.update(dt, paddle, Brick.brickMap);
+        // check va cham paddle va phat am thanh
+        if (ballWasLaunched && ball.getY() > previousY && ball.intersects(paddle)) {
+            soundManager.playSound("hit");
+        }
+
         PUObject.PUObjectList.removeIf(pu -> !pu.isActive);
         for (PUObject pu : PUObject.PUObjectList) {
             pu.update(dt, canvas, this);
@@ -95,6 +107,8 @@ public class PlayScreen extends GameScene {
         //Handle destroyed bricks
         for (Brick brick : Brick.brickMap) {
             if (!brick.isActive() && !(brick instanceof PowerUpBrick)) {
+                soundManager.playSound("hit");
+
                 Random random = new Random();
                 random.setSeed(System.nanoTime());
                 if (random.nextDouble() <=  0.1) {
@@ -113,6 +127,7 @@ public class PlayScreen extends GameScene {
         if (ball.getY() > canvas.getHeight()) {
             scoreManager.decreaseHealth(1);
             if (scoreManager.getHealth() <= 0) {
+                soundManager.playSound("gameover");
                 sceneManager.setScene("end", primaryStage);
                 ((EndScreen) sceneManager.getCurrentScene()).setGameResult(false, scoreManager.getScore());
                 ScoreRanking.saveScoreToFile(scoreManager.getScore());
@@ -127,6 +142,7 @@ public class PlayScreen extends GameScene {
         if (Brick.brickMap.isEmpty()) {
             currentLevelIndex++;
             if (currentLevelIndex >= levels.size()) {
+                soundManager.playSound("win");
                 sceneManager.setScene("end", primaryStage);
                 ((EndScreen) sceneManager.getCurrentScene()).setGameResult(true, scoreManager.getScore());
             } else {
@@ -208,6 +224,8 @@ public class PlayScreen extends GameScene {
         keyboard.setOnKeyPress(key -> {
             if (key == KeyCode.SPACE) {
                 ball.launch();
+                ballWasLaunched = true;
+                soundManager.playSound("click");
             }
         });
     }

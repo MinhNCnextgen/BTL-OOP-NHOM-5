@@ -5,6 +5,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.askeroid.graphics.Renderer;
 import org.askeroid.objects.buttons.GameButton;
+import org.askeroid.sound.SoundManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,9 +13,11 @@ import org.askeroid.utils.ScoreRanking;
 
 public class Ranking extends GameScene {
     private final HashMap<String, GameButton> buttons;
+    private SoundManager soundManager;
 
     public Ranking(Renderer renderer, SceneManager sceneManager, Stage primaryStage) {
         super(renderer, sceneManager, primaryStage);
+        soundManager = SoundManager.getInstance();
         buttons = new HashMap<>();
         buttons.put("home", new GameButton(15, root.getHeight() - 110, 100, 100, "images/buttons/home.png", this));
         bindInputs();
@@ -37,6 +40,7 @@ public class Ranking extends GameScene {
     @Override
     protected void bindInputs() {
         buttons.get("home").setCallback(button -> {
+            soundManager.playSound("click");
             System.out.println("Returning to Main Menu...");
             sceneManager.setScene("menu", primaryStage);
         });
@@ -45,6 +49,7 @@ public class Ranking extends GameScene {
         keyboard.setOnMouseClick(e -> {
                     for (GameButton button : buttons.values()) {
                         if (keyboard.isOverRegion(button.getX(), button.getY(), button.getWidth(), button.getHeight())) {
+                            soundManager.playSound("click");
                             button.triggerCallback();
                         }
                     }
