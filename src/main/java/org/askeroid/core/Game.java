@@ -8,11 +8,17 @@ import org.askeroid.graphics.Renderer;
 import org.askeroid.scenes.SceneManager;
 import org.askeroid.input.Keyboard;
 
+/** Điểm vào của game
+ */
 public class Game extends Application {
     private Renderer renderer;
     private SceneManager sceneManager;
     private Stage primaryStage;
 
+    /** Tạo sân khấu chính và các renderer,scene manager của game
+     * @param primaryStage Sân khấu chính của Javafx.
+     * @throws Exception Lỗi không chạy được màn hình.
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {;
         this.primaryStage = primaryStage;
@@ -22,6 +28,9 @@ public class Game extends Application {
         mainloop();
     }
 
+    /** Vòng lặp chính của game, đảm nhận việc update và vẽ mỗi frame.
+     *
+     */
     private void mainloop() {
         sceneManager.setScene("menu", primaryStage);
         primaryStage.show();
