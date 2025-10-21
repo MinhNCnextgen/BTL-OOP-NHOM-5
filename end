@@ -1,0 +1,44 @@
+[33m7af5ecb[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m Added documentation to every class
+[33m169117f[m Merge pull request #16 from MinhNCnextgen/cminh1
+[33m13279da[m[33m ([m[1;31morigin/cminh1[m[33m, [m[1;32mcminh1[m[33m)[m Added java documentation to all classes.
+[33m5f06557[m Merge pull request #15 from MinhNCnextgen/long
+[33m4ff7e42[m add saving score func if win
+[33m8680b80[m add saving score func if win
+[33m8bdea4a[m Merge pull request #14 from MinhNCnextgen/long
+[33mdbf0c05[m add Unit Test for Score & Health & Multiplier
+[33m4e4ea15[m[33m ([m[1;31morigin/cminh[m[33m, [m[1;32mcminh[m[33m)[m Merge pull request #13 from MinhNCnextgen/nhatminh
+[33m3032cc5[m fix sound button
+[33m7a2d3ac[m Merge pull request #12 from MinhNCnextgen/nhatminh
+[33m3b0cf35[m add sound button and sounds
+[33mf62841e[m Organize PlayScreen Component & add random PU drop
+[33mbb92da9[m Finished powerup system
+[33m4b85c8f[m Fixed wider paddle not showing up
+[33mfeb1557[m added powerup prototype
+[33m833cf79[m Change data health's type
+[33mbb8c10c[m Fixed path of score file
+[33m96cf3fe[m add scoreboard & change to 8 highest score
+[33m9885258[m add scoreboard
+[33me8a92ba[m add score.txt and saving 5 highest score feature
+[33mb4abf6c[m modify game levels
+[33m47ac19d[m Merge pull request #11 from MinhNCnextgen/master
+[33m2f01260[m Merge pull request #10 from MinhNCnextgen/master
+[33m4986fbf[m[33m ([m[1;31morigin/master[m[33m, [m[1;32mmaster[m[33m)[m Update level
+[33m5e9ff65[m Update level
+[33m3c6e164[m Merge pull request #8 from MinhNCnextgen/master
+[33m04173cf[m add endscreen
+[33me93855f[m Merge pull request #7 from MinhNCnextgen/phl
+[33mc5e31b5[m[33m ([m[1;31morigin/phl[m[33m)[m add multiplier for score
+[33m6055f3c[m Merge pull request #6 from MinhNCnextgen/phl
+[33mbed96a7[m add score
+[33m59a1ce5[m Merge pull request #5 from MinhNCnextgen/congMinh
+[33m183249b[m fixed ball collision
+[33m987ec9f[m Merge pull request #4 from MinhNCnextgen/phl
+[33m3254532[m Merge branch 'main' into phl
+[33mbd7e9d3[m add ball colliding func
+[33ma2ab00a[m Merge pull request #3 from MinhNCnextgen/CongMinh
+[33m6c28f74[m Add MainMenu, Paddle, Ball
+[33m5bf108c[m Add MainMenu, Paddle, Ball
+[33mbe1e653[m Add keyboard event
+[33m7b64259[m Thêm Các File Class
+[33m6b0e87b[m[33m ([m[1;31morigin/nhatminh[m[33m)[m Add JUnit
+[33m4bbce48[m First commit
