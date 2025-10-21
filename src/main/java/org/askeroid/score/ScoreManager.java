@@ -70,12 +70,7 @@ public class ScoreManager {
         return multiplier;
     }
 
-    /**
-     * Lấy lượng máu hiện tại của người chơi.
-     *
-     * @return giá trị health hiện tại
-     */
-    public double getHealth() {
+    public int getHealth() {
         return health;
     }
 
