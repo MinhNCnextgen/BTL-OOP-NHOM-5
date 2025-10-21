@@ -15,7 +15,7 @@ public class Ball extends GameObject {
 
     private double dx;
     private double dy;
-    private double radius;
+    private final double radius;
     private double canvasWidth;
     private double canvasHeight;
     private boolean stuckToPaddle = true;  // <-- new flag
