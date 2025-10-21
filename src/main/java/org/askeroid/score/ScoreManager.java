@@ -36,7 +36,7 @@ public class ScoreManager {
         return multiplier;
     }
 
-    public double getHealth() {
+    public int getHealth() {
         return health;
     }
 
