@@ -3,6 +3,7 @@ package org.askeroid.objects.gameObjects;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import org.askeroid.objects.gameObjects.Bricks.Brick;
+import org.askeroid.sound.SoundManager;
 
 import java.util.ArrayList;
 
@@ -19,6 +20,7 @@ public class Ball extends GameObject {
     private double canvasWidth;
     private double canvasHeight;
     private boolean stuckToPaddle = true;  // <-- new flag
+    private SoundManager soundManager;
 
     /**
      * Khởi tạo bóng với vị trí, tốc độ, góc bay và kích thước màn hình.
@@ -34,6 +36,7 @@ public class Ball extends GameObject {
     public Ball(double x, double y, double radius, double speed, double angle,
                 double canvasWidth, double canvasHeight) {
         super(x, y, radius * 2, radius * 2, speed);
+        this.soundManager = SoundManager.getInstance();
         this.radius = radius;
         this.canvasWidth = canvasWidth;
         this.canvasHeight = canvasHeight;
@@ -122,8 +125,11 @@ public class Ball extends GameObject {
      */
     private void brickCollision(ArrayList<Brick> brickList) {
         for (Brick brick : brickList) {
-            if (!brick.isActive()) continue;
+            if (!brick.isActive()) {
+                continue;
+            }
             if (intersects(brick)) {
+                soundManager.playSound("hit");
 
                 double overlapLeft = (x + radius * 2) - brick.getX();
                 double overlapRight = (brick.getX() + brick.getWidth()) - x;

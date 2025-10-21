@@ -4,7 +4,7 @@ import javafx.scene.Cursor;
 import javafx.stage.Stage;
 import org.askeroid.graphics.Renderer;
 import org.askeroid.objects.buttons.GameButton;
-import org.askeroid.utils.ScoreRanking;
+import org.askeroid.sound.SoundManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,6 +17,7 @@ import java.util.HashMap;
 public class Ranking extends GameScene {
 
     private final HashMap<String, GameButton> buttons;
+    private SoundManager soundManager;
 
     /**
      * Khởi tạo màn hình bảng xếp hạng.
@@ -27,6 +28,7 @@ public class Ranking extends GameScene {
      */
     public Ranking(Renderer renderer, SceneManager sceneManager, Stage primaryStage) {
         super(renderer, sceneManager, primaryStage);
+        soundManager = SoundManager.getInstance();
         buttons = new HashMap<>();
 
         buttons.put("home", new GameButton(
@@ -76,15 +78,19 @@ public class Ranking extends GameScene {
     @Override
     protected void bindInputs() {
         buttons.get("home").setCallback(button -> {
-            System.out.println("Trở về menu chính...");
+            soundManager.playSound("click");
+            System.out.println("Returning to Main Menu...");
             sceneManager.setScene("menu", primaryStage);
         });
 
         // Sự kiện click chuột
         keyboard.setOnMouseClick(e -> {
-            for (GameButton button : buttons.values()) {
-                if (keyboard.isOverRegion(button.getX(), button.getY(), button.getWidth(), button.getHeight())) {
-                    button.triggerCallback();
+                    for (GameButton button : buttons.values()) {
+                        if (keyboard.isOverRegion(button.getX(), button.getY(), button.getWidth(), button.getHeight())) {
+                            soundManager.playSound("click");
+                            button.triggerCallback();
+                        }
+                    }
                 }
             }
         });

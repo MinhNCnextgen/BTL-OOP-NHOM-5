@@ -11,6 +11,7 @@ import org.askeroid.objects.gameObjects.PowerUp.PowerUpManager;
 import org.askeroid.score.ScoreManager;
 import org.askeroid.utils.LevelLoader;
 import org.askeroid.utils.ScoreRanking;
+import org.askeroid.sound.SoundManager;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -30,6 +31,8 @@ public class PlayScreen extends GameScene {
     private PowerUpManager powerUpManager;
     private final ArrayList<String> levels;
     private int currentLevelIndex;
+    private SoundManager soundManager;
+    private boolean ballWasLaunched = false;
 
     /**
      * Khởi tạo màn hình chơi chính, tải danh sách level và thiết lập trạng thái ban đầu.
@@ -40,6 +43,7 @@ public class PlayScreen extends GameScene {
      */
     public PlayScreen(Renderer renderer, SceneManager sceneManager, Stage primaryStage) {
         super(renderer, sceneManager, primaryStage);
+        soundManager = SoundManager.getInstance();
 
         LevelLoader.LevelList list = LevelLoader.loadLevelList();
         if (list == null || list.levels == null || list.levels.isEmpty()) {
@@ -107,8 +111,15 @@ public class PlayScreen extends GameScene {
      * @param dt Khoảng thời gian giữa hai khung hình.
      */
     private void updateObjects(double dt) {
+        // luu vi tri y va cham vs paddle
+        double previousY = ball.getY();
+
         paddle.update(keyboard, dt, canvas.getWidth());
         ball.update(dt, paddle, Brick.brickMap);
+        // check va cham paddle va phat am thanh
+        if (ballWasLaunched && ball.getY() > previousY && ball.intersects(paddle)) {
+            soundManager.playSound("hit");
+        }
 
         PUObject.PUObjectList.removeIf(pu -> !pu.isActive);
         for (PUObject pu : PUObject.PUObjectList) {
@@ -120,9 +131,12 @@ public class PlayScreen extends GameScene {
         // Xử lý khi gạch bị phá hủy
         for (Brick brick : Brick.brickMap) {
             if (!brick.isActive() && !(brick instanceof PowerUpBrick)) {
-                Random random = new Random(System.nanoTime());
-                if (random.nextDouble() <= 0.1) {
-                    PUObject.PUObjectList.add(new PUObject(brick.getX() + 10, brick.getY(), 40, 40, 450, null));
+                soundManager.playSound("hit");
+
+                Random random = new Random();
+                random.setSeed(System.nanoTime());
+                if (random.nextDouble() <=  0.1) {
+                    PUObject.PUObjectList.add(new PUObject(brick.getX()+10, brick.getY(), 40, 40, 450, null));
                 }
             }
         }
@@ -144,6 +158,7 @@ public class PlayScreen extends GameScene {
             scoreManager.decreaseHealth(1);
 
             if (scoreManager.getHealth() <= 0) {
+                soundManager.playSound("gameover");
                 sceneManager.setScene("end", primaryStage);
                 ((EndScreen) sceneManager.getCurrentScene()).setGameResult(false, scoreManager.getScore());
                 ScoreRanking.saveScoreToFile(scoreManager.getScore());
@@ -162,6 +177,7 @@ public class PlayScreen extends GameScene {
         if (Brick.brickMap.isEmpty()) {
             currentLevelIndex++;
             if (currentLevelIndex >= levels.size()) {
+                soundManager.playSound("win");
                 sceneManager.setScene("end", primaryStage);
                 ScoreRanking.saveScoreToFile(scoreManager.getScore());
                 ((EndScreen) sceneManager.getCurrentScene()).setGameResult(true, scoreManager.getScore());
@@ -267,6 +283,8 @@ public class PlayScreen extends GameScene {
         keyboard.setOnKeyPress(key -> {
             if (key == KeyCode.SPACE) {
                 ball.launch();
+                ballWasLaunched = true;
+                soundManager.playSound("click");
             }
         });
     }

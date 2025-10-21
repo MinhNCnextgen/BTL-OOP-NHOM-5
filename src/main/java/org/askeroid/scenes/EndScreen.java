@@ -4,6 +4,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.askeroid.graphics.Renderer;
 import org.askeroid.objects.buttons.GameButton;
+import org.askeroid.sound.SoundManager;
 
 import java.util.HashMap;
 
@@ -18,6 +19,7 @@ public class EndScreen extends GameScene {
     private String resultMessage;
     private int finalScore;
     private boolean isWin = false;
+    private SoundManager soundManager;
 
     /**
      * Khởi tạo màn hình kết thúc trò chơi.
@@ -28,6 +30,7 @@ public class EndScreen extends GameScene {
      */
     public EndScreen(Renderer renderer, SceneManager sceneManager, Stage primaryStage) {
         super(renderer, sceneManager, primaryStage);
+        soundManager = SoundManager.getInstance();
         buttons = new HashMap<>();
 
         buttons.put("home", new GameButton(200, 400, 80, 80, "images/buttons/home.png", this));
@@ -104,12 +107,15 @@ public class EndScreen extends GameScene {
     @Override
     protected void bindInputs() {
         buttons.get("home").setCallback(button -> {
-            System.out.println("Trở về menu chính...");
+
+            System.out.println("Returning to Main Menu...");
+            soundManager.playSound("click");
             sceneManager.setScene("menu", primaryStage);
         });
 
         buttons.get("replay").setCallback(button -> {
-            System.out.println("Chơi lại...");
+            soundManager.playSound("click");
+            System.out.println("Replaying Game...");
             sceneManager.setScene("play", primaryStage);
         });
 
@@ -117,6 +123,7 @@ public class EndScreen extends GameScene {
         keyboard.setOnMouseClick(e -> {
             for (GameButton button : buttons.values()) {
                 if (keyboard.isOverRegion(button.getX(), button.getY(), button.getWidth(), button.getHeight())) {
+                    soundManager.playSound("click");
                     button.triggerCallback();
                 }
             }
