@@ -32,7 +32,7 @@ public class PlayScreen extends GameScene {
     private final ArrayList<String> levels;
     private int currentLevelIndex;
     private SoundManager soundManager;
-    private boolean ballWasLaunched = false;
+    private boolean isPaused;
 
     /**
      * Khởi tạo màn hình chơi chính, tải danh sách level và thiết lập trạng thái ban đầu.
@@ -76,7 +76,7 @@ public class PlayScreen extends GameScene {
                 root.getWidth(),
                 root.getHeight()
         );
-
+        isPaused = false;
         if (!levels.isEmpty()) {
             loadNextLevel();
         } else {
@@ -100,9 +100,11 @@ public class PlayScreen extends GameScene {
      */
     @Override
     public void update(double dt) {
-        updateObjects(dt);
-        checkOffBounds();
-        checkWinCondition();
+        if (!isPaused) {
+            updateObjects(dt);
+            checkOffBounds();
+            checkWinCondition();
+        }
     }
 
     /**
@@ -117,7 +119,8 @@ public class PlayScreen extends GameScene {
         paddle.update(keyboard, dt, canvas.getWidth());
         ball.update(dt, paddle, Brick.brickMap);
         // check va cham paddle va phat am thanh
-        if (ballWasLaunched && ball.getY() > previousY && ball.intersects(paddle)) {
+        if (ball.intersects(paddle)) {
+            System.out.println("PLay sound!!!!");
             soundManager.playSound("hit");
         }
 
@@ -151,7 +154,7 @@ public class PlayScreen extends GameScene {
 
     /**
      * Kiểm tra xem bóng có rơi ra ngoài màn hình không.
-     * <p>Nếu rơi, trừ máu và reset bóng; nếu hết máu → sang màn hình kết thúc.</p>
+     * Nếu rơi, trừ máu và reset bóng; nếu hết máu → sang màn hình kết thúc.
      */
     private void checkOffBounds() {
         if (ball.getY() > canvas.getHeight()) {
@@ -171,7 +174,7 @@ public class PlayScreen extends GameScene {
 
     /**
      * Kiểm tra điều kiện thắng: khi không còn gạch trên màn hình.
-     * <p>Nếu thắng level -> sang level kế tiếp, nếu hết level -> thắng toàn game.</p>
+     * Nếu thắng level -> sang level kế tiếp, nếu hết level -> thắng toàn game.
      */
     private void checkWinCondition() {
         if (Brick.brickMap.isEmpty()) {
@@ -235,6 +238,15 @@ public class PlayScreen extends GameScene {
         for (PUObject pu : PUObject.PUObjectList) {
             renderer.drawImage(gc, pu.getImagePowerUp(), pu.getX(), pu.getY(), pu.getWidth(), pu.getHeight());
         }
+
+        if (isPaused) {
+            renderer.drawOverlay(gc, canvas);
+            renderer.drawImage(gc, "images/buttons/Pause.png",
+                    (canvas.getWidth() - 600) / 2,
+                    (canvas.getHeight() - 300) / 2,
+                    600,
+                    300);
+        }
     }
 
     /**
@@ -276,15 +288,26 @@ public class PlayScreen extends GameScene {
 
     /**
      * Gán các phím điều khiển trong màn chơi.
-     * Hiện tại: nhấn SPACE để phóng bóng.
+     * Nhấn SPACE để phóng bóng.
      */
     @Override
     protected void bindInputs() {
         keyboard.setOnKeyPress(key -> {
             if (key == KeyCode.SPACE) {
-                ball.launch();
-                ballWasLaunched = true;
+                if (!isPaused) {
+                    ball.launch();
+                    soundManager.playSound("click");
+                }
+            }
+            if (key == KeyCode.ESCAPE) {
                 soundManager.playSound("click");
+                if (!isPaused) {
+                    isPaused = true;
+                    soundManager.setSoundEnabled(false);
+                } else {
+                    isPaused = false;
+                    soundManager.setSoundEnabled(true);
+                }
             }
         });
     }
