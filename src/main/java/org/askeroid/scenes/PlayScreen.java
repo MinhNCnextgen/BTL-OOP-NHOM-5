@@ -33,6 +33,7 @@ public class PlayScreen extends GameScene {
     private int currentLevelIndex;
     private SoundManager soundManager;
     private boolean isPaused;
+    private String current_level_name;
 
     /**
      * Khởi tạo màn hình chơi chính, tải danh sách level và thiết lập trạng thái ban đầu.
@@ -51,6 +52,7 @@ public class PlayScreen extends GameScene {
             levels = new ArrayList<>();
         } else {
             levels = list.levels;
+
         }
 
         bindInputs();
@@ -213,8 +215,10 @@ public class PlayScreen extends GameScene {
         renderer.drawText(gc, "Score: " + scoreManager.getScore(), 10, 30, "Times New Roman", 24, javafx.scene.paint.Color.WHITE);
         renderer.drawText(gc, "Multiplier: " + String.format("%.1f", scoreManager.getMultiplier()) + "x",
                 root.getWidth() - 170, 30, "Times New Roman", 24, javafx.scene.paint.Color.WHITE);
-        renderer.drawText(gc, "Health: " + scoreManager.getHealth(),
-                root.getWidth() / 2 - 60, 30, "Times New Roman", 24, javafx.scene.paint.Color.WHITE);
+        renderer.drawText(gc, "HP: " + scoreManager.getHealth(),
+                root.getWidth() / 3 - 30, 30, "Times New Roman", 24, javafx.scene.paint.Color.WHITE);
+        renderer.drawText(gc, "Level: " + (currentLevelIndex + 1),
+                root.getWidth() / 2 + 10, 30, "Times New Roman", 24, javafx.scene.paint.Color.WHITE);
     }
 
     /**
@@ -254,11 +258,11 @@ public class PlayScreen extends GameScene {
      * Đọc dữ liệu layout từ file JSON và tạo gạch tương ứng.
      */
     private void loadNextLevel() {
-        String levelName = levels.get(currentLevelIndex);
-        LevelLoader.LevelData currentLevelData = LevelLoader.loadLevelData("levels_data/" + levelName);
+        current_level_name = levels.get(currentLevelIndex);
+        LevelLoader.LevelData currentLevelData = LevelLoader.loadLevelData("levels_data/" + current_level_name);
 
         if (currentLevelData == null) {
-            System.err.println("Failed to load level: " + levelName);
+            System.err.println("Failed to load level: " + current_level_name);
             return;
         }
 
