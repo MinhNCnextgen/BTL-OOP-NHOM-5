@@ -31,9 +31,8 @@ public class PlayScreen extends GameScene {
     private PowerUpManager powerUpManager;
     private final ArrayList<String> levels;
     private int currentLevelIndex;
-    private SoundManager soundManager;
+    private final SoundManager soundManager;
     private boolean isPaused;
-    private String current_level_name;
 
     /**
      * Khởi tạo màn hình chơi chính, tải danh sách level và thiết lập trạng thái ban đầu.
@@ -116,15 +115,14 @@ public class PlayScreen extends GameScene {
      */
     private void updateObjects(double dt) {
         // luu vi tri y va cham vs paddle
-        double previousY = ball.getY();
-
-        paddle.update(keyboard, dt, canvas.getWidth());
-        ball.update(dt, paddle, Brick.brickMap);
-        // check va cham paddle va phat am thanh
         if (ball.intersects(paddle)) {
             System.out.println("PLay sound!!!!");
             soundManager.playSound("hit");
         }
+        paddle.update(keyboard, dt, canvas.getWidth());
+        ball.update(dt, paddle, Brick.brickMap);
+        // check va cham paddle va phat am thanh
+
 
         PUObject.PUObjectList.removeIf(pu -> !pu.isActive);
         for (PUObject pu : PUObject.PUObjectList) {
@@ -204,6 +202,9 @@ public class PlayScreen extends GameScene {
         renderer.drawBackground(gc, "images/background/play_background.jpg");
         renderHUD(renderer);
         renderObjects(renderer);
+        if (isPaused){
+            renderPauseOverLay(renderer);
+        }
     }
 
     /**
@@ -242,23 +243,27 @@ public class PlayScreen extends GameScene {
         for (PUObject pu : PUObject.PUObjectList) {
             renderer.drawImage(gc, pu.getImagePowerUp(), pu.getX(), pu.getY(), pu.getWidth(), pu.getHeight());
         }
+    }
 
-        if (isPaused) {
-            renderer.drawOverlay(gc, canvas);
-            renderer.drawImage(gc, "images/buttons/Pause.png",
+    /**
+     * Vẽ lớp phủ khi trò chơi bị tạm dừng.
+     *
+     * @param renderer Đối tượng {@link Renderer} dùng để vẽ.
+     */
+    private void renderPauseOverLay(Renderer renderer) {
+        renderer.drawOverlay(gc, canvas);
+        renderer.drawImage(gc, "images/buttons/Pause.png",
                     (canvas.getWidth() - 600) / 2,
                     (canvas.getHeight() - 300) / 2,
                     600,
                     300);
-        }
     }
-
     /**
      * Tải level kế tiếp dựa trên danh sách đã có.
      * Đọc dữ liệu layout từ file JSON và tạo gạch tương ứng.
      */
     private void loadNextLevel() {
-        current_level_name = levels.get(currentLevelIndex);
+        String current_level_name = levels.get(currentLevelIndex);
         LevelLoader.LevelData currentLevelData = LevelLoader.loadLevelData("levels_data/" + current_level_name);
 
         if (currentLevelData == null) {
