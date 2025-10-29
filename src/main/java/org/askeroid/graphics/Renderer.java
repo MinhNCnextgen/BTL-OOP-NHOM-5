@@ -1,6 +1,8 @@
 package org.askeroid.graphics;
 
+import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.effect.GaussianBlur;
 import javafx.stage.Stage;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
@@ -139,5 +141,21 @@ public class Renderer {
     public void drawMask(GraphicsContext gc, ExplosionBrick.Mask mask) {
         gc.setFill(Color.color(1, 0, 0, 0.3));
         gc.fillOval(mask.getX(), mask.getY(), mask.getWidth(), mask.getHeight());
+    }
+
+    public void drawOverlay(GraphicsContext gc, Canvas canvas) {
+        // Save current state
+        gc.save();
+
+        // Apply a Gaussian blur effect
+        GaussianBlur blur = new GaussianBlur(20); // adjust blur radius (higher = blurrier)
+        gc.applyEffect(blur);
+
+        // Draw a semi-transparent rectangle over the entire canvas
+        gc.setFill(Color.rgb(0, 0, 0, 0.3)); // black with 30% opacity
+        gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+
+        // Restore the original state
+        gc.restore();
     }
 }

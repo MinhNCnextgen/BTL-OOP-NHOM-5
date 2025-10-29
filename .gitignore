@@ -39,3 +39,6 @@ build/
 
 ### Other ###
 .idea/
+
+### score.txt ###
+.src/main/resources/score_data/score.txt

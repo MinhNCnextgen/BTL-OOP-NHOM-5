@@ -4,6 +4,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.askeroid.graphics.Renderer;
 import org.askeroid.objects.buttons.GameButton;
+import org.askeroid.sound.SoundManager;
 
 import java.util.HashMap;
 
@@ -18,6 +19,7 @@ public class EndScreen extends GameScene {
     private String resultMessage;
     private int finalScore;
     private boolean isWin = false;
+    private SoundManager soundManager;
 
     /**
      * Khởi tạo màn hình kết thúc trò chơi.
@@ -28,6 +30,7 @@ public class EndScreen extends GameScene {
      */
     public EndScreen(Renderer renderer, SceneManager sceneManager, Stage primaryStage) {
         super(renderer, sceneManager, primaryStage);
+        soundManager = SoundManager.getInstance();
         buttons = new HashMap<>();
 
         buttons.put("home", new GameButton(200, 400, 80, 80, "images/buttons/home.png", this));
@@ -59,39 +62,47 @@ public class EndScreen extends GameScene {
         // Không có cập nhật động trong màn hình kết thúc.
     }
 
-    /**
-     * Vẽ toàn bộ nội dung màn hình kết thúc, bao gồm nền, điểm và nút.
-     *
-     * @param renderer bộ vẽ dùng để hiển thị hình ảnh.
-     */
     @Override
+    /**
+     * Hiển thị màn hình kết quả (thắng/thua) sau khi kết thúc trò chơi.
+     *
+     * @param renderer đối tượng Renderer chịu trách nhiệm vẽ lên màn hình.
+     */
     public void renderScreen(Renderer renderer) {
+        // Xóa toàn bộ canvas
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+
+        // Vẽ nền trò chơi
         renderer.drawBackground(gc, "images/background/play_background.jpg");
 
+        // Vẽ lớp phủ mờ (overlay)
+        renderer.drawOverlay(gc, canvas);
+
+        // Tô thêm lớp tối nhẹ để làm nổi bật chữ
         gc.setFill(Color.rgb(0, 0, 0, 0.7));
         gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
-        // Hiển thị thông báo kết quả
         Color resultColor = isWin ? Color.rgb(0, 255, 100) : Color.rgb(255, 50, 50);
-        gc.setFill(resultColor);
-        gc.setFont(javafx.scene.text.Font.font("Arial", javafx.scene.text.FontWeight.BOLD, 60));
+        String fontFamily = "Arial";
 
+        // Tính độ rộng chữ để căn giữa
         javafx.scene.text.Text tempText = new javafx.scene.text.Text(resultMessage);
-        tempText.setFont(javafx.scene.text.Font.font("Arial", javafx.scene.text.FontWeight.BOLD, 60));
+        tempText.setFont(javafx.scene.text.Font.font(fontFamily, javafx.scene.text.FontWeight.BOLD, 60));
         double textWidth = tempText.getLayoutBounds().getWidth();
-        gc.fillText(resultMessage, (canvas.getWidth() - textWidth) / 2, 200);
 
-        // Hiển thị điểm số
+        renderer.drawText(gc, resultMessage,
+                (canvas.getWidth() - textWidth) / 2,
+                200, fontFamily, 60, resultColor);
+
         String scoreText = "Score: " + finalScore;
-        gc.setFill(Color.WHITE);
-        gc.setFont(javafx.scene.text.Font.font("Arial", javafx.scene.text.FontWeight.NORMAL, 30));
         tempText.setText(scoreText);
-        tempText.setFont(javafx.scene.text.Font.font("Arial", 30));
+        tempText.setFont(javafx.scene.text.Font.font(fontFamily, 30));
         textWidth = tempText.getLayoutBounds().getWidth();
-        gc.fillText(scoreText, (canvas.getWidth() - textWidth) / 2, 280);
 
-        // Vẽ các nút
+        renderer.drawText(gc, scoreText,
+                (canvas.getWidth() - textWidth) / 2,
+                280, fontFamily, 30, Color.WHITE);
+
         for (GameButton button : buttons.values()) {
             button.renderButton();
         }
@@ -104,12 +115,15 @@ public class EndScreen extends GameScene {
     @Override
     protected void bindInputs() {
         buttons.get("home").setCallback(button -> {
-            System.out.println("Trở về menu chính...");
+
+            System.out.println("Returning to Main Menu...");
+            soundManager.playSound("click");
             sceneManager.setScene("menu", primaryStage);
         });
 
         buttons.get("replay").setCallback(button -> {
-            System.out.println("Chơi lại...");
+            soundManager.playSound("click");
+            System.out.println("Replaying Game...");
             sceneManager.setScene("play", primaryStage);
         });
 
@@ -117,6 +131,7 @@ public class EndScreen extends GameScene {
         keyboard.setOnMouseClick(e -> {
             for (GameButton button : buttons.values()) {
                 if (keyboard.isOverRegion(button.getX(), button.getY(), button.getWidth(), button.getHeight())) {
+                    soundManager.playSound("click");
                     button.triggerCallback();
                 }
             }

@@ -4,7 +4,7 @@ import javafx.scene.Cursor;
 import javafx.stage.Stage;
 import org.askeroid.graphics.Renderer;
 import org.askeroid.objects.buttons.GameButton;
-
+import org.askeroid.sound.SoundManager;
 import java.util.HashMap;
 
 /**
@@ -19,6 +19,7 @@ public class MainMenu extends GameScene {
     private final HashMap<String, GameButton> buttons;
     private boolean isSoundOn = true;
     private String currentSoundImage = "images/buttons/soundOn.png";
+    private SoundManager soundManager;
 
     /**
      * Khởi tạo màn hình menu chính.
@@ -29,7 +30,7 @@ public class MainMenu extends GameScene {
      */
     public MainMenu(Renderer renderer, SceneManager sceneManager, Stage primaryStage) {
         super(renderer, sceneManager, primaryStage);
-
+        soundManager = SoundManager.getInstance();
         buttons = new HashMap<>();
         buttons.put("play", new GameButton(150, 270, 300, 150, "images/buttons/play.png", this));
         buttons.put("exit", new GameButton(150, 480, 300, 150, "images/buttons/quit.png", this));
@@ -79,24 +80,30 @@ public class MainMenu extends GameScene {
     @Override
     protected void bindInputs() {
         buttons.get("play").setCallback(button -> {
+            soundManager.playSound("click");
             System.out.println("Starting Game...");
             sceneManager.setScene("play", primaryStage);
         });
 
         buttons.get("exit").setCallback(button -> {
+            soundManager.playSound("click");
             System.out.println("Exiting Game...");
             System.exit(0);
         });
 
         buttons.get("Active@3x").setCallback(button -> {
+            soundManager.playSound("click");
             System.out.println("Star Button Clicked!");
             sceneManager.setScene("ranking", primaryStage);
         });
 
         buttons.get("sound").setCallback(button -> {
+            soundManager.playSound("click");
             isSoundOn = !isSoundOn;
             currentSoundImage = isSoundOn ? "images/buttons/soundOn.png" : "images/buttons/soundOff.png";
             button.setImage(currentSoundImage);
+            soundManager.setSoundEnabled(isSoundOn);
+
             System.out.println("Sound: " + (isSoundOn ? "ON" : "OFF"));
         });
 
@@ -104,6 +111,7 @@ public class MainMenu extends GameScene {
         keyboard.setOnMouseClick(e -> {
             for (GameButton button : buttons.values()) {
                 if (keyboard.isOverRegion(button.getX(), button.getY(), button.getWidth(), button.getHeight())) {
+
                     button.triggerCallback();
                 }
             }
@@ -127,6 +135,7 @@ public class MainMenu extends GameScene {
      */
     @Override
     public void onEnter() {
+        soundManager.playBackgroundMusic();
         System.out.println("Entered Main Menu");
     }
 

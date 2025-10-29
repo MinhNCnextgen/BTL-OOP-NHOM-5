@@ -11,6 +11,7 @@ import org.askeroid.objects.gameObjects.PowerUp.PowerUpManager;
 import org.askeroid.score.ScoreManager;
 import org.askeroid.utils.LevelLoader;
 import org.askeroid.utils.ScoreRanking;
+import org.askeroid.sound.SoundManager;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -30,6 +31,8 @@ public class PlayScreen extends GameScene {
     private PowerUpManager powerUpManager;
     private final ArrayList<String> levels;
     private int currentLevelIndex;
+    private final SoundManager soundManager;
+    private boolean isPaused;
 
     /**
      * Khởi tạo màn hình chơi chính, tải danh sách level và thiết lập trạng thái ban đầu.
@@ -40,6 +43,7 @@ public class PlayScreen extends GameScene {
      */
     public PlayScreen(Renderer renderer, SceneManager sceneManager, Stage primaryStage) {
         super(renderer, sceneManager, primaryStage);
+        soundManager = SoundManager.getInstance();
 
         LevelLoader.LevelList list = LevelLoader.loadLevelList();
         if (list == null || list.levels == null || list.levels.isEmpty()) {
@@ -47,6 +51,7 @@ public class PlayScreen extends GameScene {
             levels = new ArrayList<>();
         } else {
             levels = list.levels;
+
         }
 
         bindInputs();
@@ -72,7 +77,7 @@ public class PlayScreen extends GameScene {
                 root.getWidth(),
                 root.getHeight()
         );
-
+        isPaused = false;
         if (!levels.isEmpty()) {
             loadNextLevel();
         } else {
@@ -96,9 +101,11 @@ public class PlayScreen extends GameScene {
      */
     @Override
     public void update(double dt) {
-        updateObjects(dt);
-        checkOffBounds();
-        checkWinCondition();
+        if (!isPaused) {
+            updateObjects(dt);
+            checkOffBounds();
+            checkWinCondition();
+        }
     }
 
     /**
@@ -107,8 +114,15 @@ public class PlayScreen extends GameScene {
      * @param dt Khoảng thời gian giữa hai khung hình.
      */
     private void updateObjects(double dt) {
+        // luu vi tri y va cham vs paddle
+        if (ball.intersects(paddle)) {
+            System.out.println("PLay sound!!!!");
+            soundManager.playSound("hit");
+        }
         paddle.update(keyboard, dt, canvas.getWidth());
         ball.update(dt, paddle, Brick.brickMap);
+        // check va cham paddle va phat am thanh
+
 
         PUObject.PUObjectList.removeIf(pu -> !pu.isActive);
         for (PUObject pu : PUObject.PUObjectList) {
@@ -120,9 +134,12 @@ public class PlayScreen extends GameScene {
         // Xử lý khi gạch bị phá hủy
         for (Brick brick : Brick.brickMap) {
             if (!brick.isActive() && !(brick instanceof PowerUpBrick)) {
-                Random random = new Random(System.nanoTime());
-                if (random.nextDouble() <= 0.1) {
-                    PUObject.PUObjectList.add(new PUObject(brick.getX() + 10, brick.getY(), 40, 40, 450, null));
+                soundManager.playSound("hit");
+
+                Random random = new Random();
+                random.setSeed(System.nanoTime());
+                if (random.nextDouble() <=  0.1) {
+                    PUObject.PUObjectList.add(new PUObject(brick.getX()+10, brick.getY(), 40, 40, 450, null));
                 }
             }
         }
@@ -137,13 +154,14 @@ public class PlayScreen extends GameScene {
 
     /**
      * Kiểm tra xem bóng có rơi ra ngoài màn hình không.
-     * <p>Nếu rơi, trừ máu và reset bóng; nếu hết máu → sang màn hình kết thúc.</p>
+     * Nếu rơi, trừ máu và reset bóng; nếu hết máu → sang màn hình kết thúc.
      */
     private void checkOffBounds() {
         if (ball.getY() > canvas.getHeight()) {
             scoreManager.decreaseHealth(1);
 
             if (scoreManager.getHealth() <= 0) {
+                soundManager.playSound("gameover");
                 sceneManager.setScene("end", primaryStage);
                 ((EndScreen) sceneManager.getCurrentScene()).setGameResult(false, scoreManager.getScore());
                 ScoreRanking.saveScoreToFile(scoreManager.getScore());
@@ -156,12 +174,13 @@ public class PlayScreen extends GameScene {
 
     /**
      * Kiểm tra điều kiện thắng: khi không còn gạch trên màn hình.
-     * <p>Nếu thắng level -> sang level kế tiếp, nếu hết level -> thắng toàn game.</p>
+     * Nếu thắng level -> sang level kế tiếp, nếu hết level -> thắng toàn game.
      */
     private void checkWinCondition() {
         if (Brick.brickMap.isEmpty()) {
             currentLevelIndex++;
             if (currentLevelIndex >= levels.size()) {
+                soundManager.playSound("win");
                 sceneManager.setScene("end", primaryStage);
                 ScoreRanking.saveScoreToFile(scoreManager.getScore());
                 ((EndScreen) sceneManager.getCurrentScene()).setGameResult(true, scoreManager.getScore());
@@ -183,6 +202,9 @@ public class PlayScreen extends GameScene {
         renderer.drawBackground(gc, "images/background/play_background.jpg");
         renderHUD(renderer);
         renderObjects(renderer);
+        if (isPaused){
+            renderPauseOverLay(renderer);
+        }
     }
 
     /**
@@ -194,8 +216,10 @@ public class PlayScreen extends GameScene {
         renderer.drawText(gc, "Score: " + scoreManager.getScore(), 10, 30, "Times New Roman", 24, javafx.scene.paint.Color.WHITE);
         renderer.drawText(gc, "Multiplier: " + String.format("%.1f", scoreManager.getMultiplier()) + "x",
                 root.getWidth() - 170, 30, "Times New Roman", 24, javafx.scene.paint.Color.WHITE);
-        renderer.drawText(gc, "Health: " + scoreManager.getHealth(),
-                root.getWidth() / 2 - 60, 30, "Times New Roman", 24, javafx.scene.paint.Color.WHITE);
+        renderer.drawText(gc, "HP: " + scoreManager.getHealth(),
+                root.getWidth() / 3 - 30, 30, "Times New Roman", 24, javafx.scene.paint.Color.WHITE);
+        renderer.drawText(gc, "Level: " + (currentLevelIndex + 1),
+                root.getWidth() / 2 + 10, 30, "Times New Roman", 24, javafx.scene.paint.Color.WHITE);
     }
 
     /**
@@ -222,15 +246,28 @@ public class PlayScreen extends GameScene {
     }
 
     /**
+     * Vẽ lớp phủ khi trò chơi bị tạm dừng.
+     *
+     * @param renderer Đối tượng {@link Renderer} dùng để vẽ.
+     */
+    private void renderPauseOverLay(Renderer renderer) {
+        renderer.drawOverlay(gc, canvas);
+        renderer.drawImage(gc, "images/buttons/Pause.png",
+                    (canvas.getWidth() - 600) / 2,
+                    (canvas.getHeight() - 300) / 2,
+                    600,
+                    300);
+    }
+    /**
      * Tải level kế tiếp dựa trên danh sách đã có.
      * Đọc dữ liệu layout từ file JSON và tạo gạch tương ứng.
      */
     private void loadNextLevel() {
-        String levelName = levels.get(currentLevelIndex);
-        LevelLoader.LevelData currentLevelData = LevelLoader.loadLevelData("levels_data/" + levelName);
+        String current_level_name = levels.get(currentLevelIndex);
+        LevelLoader.LevelData currentLevelData = LevelLoader.loadLevelData("levels_data/" + current_level_name);
 
         if (currentLevelData == null) {
-            System.err.println("Failed to load level: " + levelName);
+            System.err.println("Failed to load level: " + current_level_name);
             return;
         }
 
@@ -260,13 +297,26 @@ public class PlayScreen extends GameScene {
 
     /**
      * Gán các phím điều khiển trong màn chơi.
-     * Hiện tại: nhấn SPACE để phóng bóng.
+     * Nhấn SPACE để phóng bóng.
      */
     @Override
     protected void bindInputs() {
         keyboard.setOnKeyPress(key -> {
             if (key == KeyCode.SPACE) {
-                ball.launch();
+                if (!isPaused) {
+                    ball.launch();
+                    soundManager.playSound("click");
+                }
+            }
+            if (key == KeyCode.ESCAPE) {
+                soundManager.playSound("click");
+                if (!isPaused) {
+                    isPaused = true;
+                    soundManager.setSoundEnabled(false);
+                } else {
+                    isPaused = false;
+                    soundManager.setSoundEnabled(true);
+                }
             }
         });
     }
