@@ -35,7 +35,7 @@ public class MainMenu extends GameScene {
         buttons.put("play", new GameButton(150, 270, 300, 150, "images/buttons/play.png", this));
         buttons.put("exit", new GameButton(150, 480, 300, 150, "images/buttons/quit.png", this));
         buttons.put("Active@3x", new GameButton(root.getWidth() / 2 - 50, root.getHeight() - 136, 100, 100, "asset/png@3x/Star/Large/Active@3x.png", this));
-        buttons.put("sound", new GameButton(10, 690, 100, 100, currentSoundImage, this));
+        buttons.put("sound", new GameButton(15, 690, 100, 100, currentSoundImage, this));
 
         bindInputs();
     }
