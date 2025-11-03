@@ -44,13 +44,35 @@ public abstract class GameObject {
 
     /**Getters &  Setters */
 
-    public double getX() { return x; }
-    public double getY() { return y; }
-    public double getWidth() { return width; }
-    public double getHeight() { return height; }
+    public double getX() {
+        return x;
+    }
 
-    public void setX(double val) { x = val; }
-    public void setY(double val) { y = val; }
-    public void setWidth(double val) { width = val; }
-    public void setHeight(double val) { height = val; }
+    public double getY() {
+        return y;
+    }
+
+    public double getWidth() {
+        return width;
+    }
+
+    public double getHeight() {
+        return height;
+    }
+
+    public void setX(double val) {
+        x = val;
+    }
+
+    public void setY(double val) {
+        y = val;
+    }
+
+    public void setWidth(double val) {
+        width = val;
+    }
+
+    public void setHeight(double val) {
+        height = val;
+    }
 }

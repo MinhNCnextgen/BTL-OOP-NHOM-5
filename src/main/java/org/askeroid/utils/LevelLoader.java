@@ -92,7 +92,8 @@ public class LevelLoader {
      * @return mảng 2 chiều đại diện cho bố cục màn chơi.
      * @throws IllegalArgumentException nếu số hàng hoặc số cột không khớp với yêu cầu.
      */
-    public static ArrayList<ArrayList<String>> parseLayout(String layoutString, int requiredRows, int requiredCols) {
+    public static ArrayList<ArrayList<String>> parseLayout(String layoutString,
+                                                           int requiredRows, int requiredCols) {
         ArrayList<ArrayList<String>> layout = new ArrayList<>();
         String[] rows = layoutString.split("\\|");
 
@@ -112,7 +113,8 @@ public class LevelLoader {
 
             if (rowList.size() != requiredCols) {
                 throw new IllegalArgumentException(
-                        "Số cột của layout không khớp tại hàng " + i + ": cần " + requiredCols + " nhưng nhận " + rowList.size()
+                        "Số cột của layout không khớp tại hàng " + i + ": cần " + requiredCols
+                                + " nhưng nhận " + rowList.size()
                 );
             }
 
