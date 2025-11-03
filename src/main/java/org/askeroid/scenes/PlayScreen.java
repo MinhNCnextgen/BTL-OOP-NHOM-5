@@ -258,6 +258,7 @@ public class PlayScreen extends GameScene {
                     600,
                     300);
     }
+
     /**
      * Tải level kế tiếp dựa trên danh sách đã có.
      * Đọc dữ liệu layout từ file JSON và tạo gạch tương ứng.

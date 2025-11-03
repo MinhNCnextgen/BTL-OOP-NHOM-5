@@ -185,8 +185,13 @@ public class Ball extends GameObject {
         dy = -speed;
     }
 
-    public double getRadius() { return radius; }
-    public double getSpeed() { return speed; }
+    public double getRadius() {
+        return radius;
+    }
+
+    public double getSpeed() {
+        return speed;
+    }
 
     /**
      * Đặt tốc độ mới cho bóng và giữ nguyên hướng bay hiện tại.

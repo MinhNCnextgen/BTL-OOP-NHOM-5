@@ -8,7 +8,8 @@ import org.askeroid.graphics.Renderer;
 import org.askeroid.scenes.SceneManager;
 import org.askeroid.input.Keyboard;
 
-/** Điểm vào của game
+/**
+ * Điểm vào của game.
  */
 public class Game extends Application {
     private Renderer renderer;

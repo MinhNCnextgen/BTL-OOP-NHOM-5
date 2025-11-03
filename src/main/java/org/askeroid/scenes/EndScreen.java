@@ -33,8 +33,10 @@ public class EndScreen extends GameScene {
         soundManager = SoundManager.getInstance();
         buttons = new HashMap<>();
 
-        buttons.put("home", new GameButton(200, 400, 80, 80, "images/buttons/home.png", this));
-        buttons.put("replay", new GameButton(320, 400, 80, 80, "images/buttons/replay.png", this));
+        buttons.put("home", new GameButton(200, 400, 80, 80,
+                "images/buttons/home.png", this));
+        buttons.put("replay", new GameButton(320, 400, 80, 80,
+                "images/buttons/replay.png", this));
 
         bindInputs();
     }
@@ -115,7 +117,6 @@ public class EndScreen extends GameScene {
     @Override
     protected void bindInputs() {
         buttons.get("home").setCallback(button -> {
-
             System.out.println("Returning to Main Menu...");
             soundManager.playSound("click");
             sceneManager.setScene("menu", primaryStage);

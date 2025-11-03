@@ -139,8 +139,6 @@ public class MainMenu extends GameScene {
         System.out.println("Entered Main Menu");
     }
 
-    // Getter / Setter
-
     /**
      * Kiểm tra trạng thái bật/tắt âm thanh.
      *

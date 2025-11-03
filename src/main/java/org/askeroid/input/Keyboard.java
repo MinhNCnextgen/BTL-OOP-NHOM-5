@@ -52,7 +52,6 @@ public class Keyboard {
      * @param scene đối tượng {@link Scene} mà người chơi tương tác
      */
     public Keyboard(Scene scene) {
-
         // Xử lý sự kiện bàn phím
         scene.setOnKeyPressed(event -> {
             KeyCode key = event.getCode();
